@@ -10,7 +10,7 @@ $projectName = 'PhalApi开源接口框架';
 /**
  * TODO: 装载你的接口
  */
-DI()->loader->addDirs('Ntsdmember');
+DI()->loader->addDirs('weixin');
 
 /**
  * 扩展类库

@@ -16,7 +16,7 @@ return array(
 //            'port'      => '3306',               //数据库端口
 //            'charset'   => 'utf8mb4',            //数据库字符集
 //        ),
-        'db_daili' => array(                   //服务器标记
+        'db_teeshop' => array(                   //服务器标记
             'host'      => '192.168.1.155',//数据库域名
             'name'      => 'teeshop',               //数据库名字
             'user'      => 'root',               //数据库用户名
@@ -32,10 +32,10 @@ return array(
     'tables' => array(
         //通用路由
         '__default__' => array(
-            'prefix' => '',
+            'prefix' => 'shop_',
             'key' => 'id',
             'map' => array(
-                array('db' => 'db_daili'),
+                array('db' => 'db_teeshop'),
             ),
         ),
 
