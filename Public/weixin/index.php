@@ -7,7 +7,7 @@ require_once dirname(__FILE__) . '/../init.php';
 
 
 //装载你的接口
-DI()->loader->addDirs('weixin');
+DI()->loader->addDirs('Weixin');
 
 DI()->loader->addDirs('Library');
 
