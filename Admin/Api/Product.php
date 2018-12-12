@@ -46,11 +46,35 @@ class Api_Product  extends PhalApi_Api{
 
             'getMemberLevelList' => array(
             ),
+            'searchProduct' => array(
+                'keyword' => array('name' => 'keyword', 'type' => 'string', 'require' => true, 'desc' => '商品名称'),
 
+            ),
         );
     }
 
+    /**
+     * 商品列表模糊搜索
+     * @desc  获取商品信息列表
+     */
+    public function searchProduct(){
 
+        $rs = array('code' => 0, 'msg' => '', 'info' => array());
+
+        $product = new Domain_Product();
+
+        $result = $product->searchProduct($this->keyword);
+
+        if($result){
+
+            $rs['code'] = 1;
+
+            $rs['info'] = $result;
+        }
+
+        return $rs;
+
+    }
     /**
      * 商品信息列表
      * @desc  获取商品信息列表

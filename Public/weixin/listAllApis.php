@@ -32,7 +32,7 @@ require_once dirname(__FILE__) . '/../init.php';
 $projectName = 'PhalApi开源接口框架';
 
 
-$apiDirName = 'Ntsdmember';
+$apiDirName = 'Weixin';
 
 
 $libraryPaths = array(
