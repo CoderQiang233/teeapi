@@ -9,7 +9,10 @@
 include_once '../../Config/app.php';
 class Model_Product extends PhalApi_Model_NotORM
 {
-
+ public function searchProduct($keyword){
+     $products=DI()->notorm->product->select('product_id','name')->where('name LIKE ? ', '%'.$keyword.'%')->order('name DESC')->fetchAll();
+     return $products;
+ }
     //获取商品列表
     public function getList($data){
 

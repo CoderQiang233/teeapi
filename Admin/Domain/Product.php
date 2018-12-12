@@ -8,7 +8,11 @@
  */
 class Domain_Product
 {
+    public function searchProduct($keyword){
+        $product = new Model_Product();
 
+        return $product ->searchProduct($keyword);
+    }
     public function getlist($data){
 
         $product = new Model_Product();
