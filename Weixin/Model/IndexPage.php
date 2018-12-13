@@ -10,4 +10,9 @@ class Model_IndexPage extends PhalApi_Model_NotORM{
         $data=DI()->notorm->banner->select('*')->order('id DESC')->fetchAll();
         return $data;
     }
+
+    public  function search($name){
+
+        return DI()->notorm->product->where('name LIKE ?','%'.$name.'%')->order('market_price')->fetchAll();
+    }
 }

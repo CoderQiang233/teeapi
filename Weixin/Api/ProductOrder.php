@@ -24,6 +24,10 @@ class Api_ProductOrder  extends PhalApi_Api{
             'deleteProductOrderById' => array(
                 'product_order_id' 	=> array('name' => 'product_order_id', 'type' =>'string', 'require' => true,'desc'=>'id'),
             ),
+            'confirmReceipt' => array(
+                'product_order_id' 	=> array('name' => 'product_order_id', 'type' =>'string', 'require' => true,'desc'=>'id'),
+            ),
+
         );
     }
 
@@ -107,6 +111,28 @@ class Api_ProductOrder  extends PhalApi_Api{
         $domain = new Domain_ProductOrder();
 
         $result = $domain -> deleteProductOrderById($this);
+
+        if($result){
+
+            $rs['code'] = 1;
+
+            $rs['info'] = $result;
+        }
+
+        return $rs;
+    }
+
+
+    /**
+     * 确认收货
+     */
+    public function confirmReceipt(){
+
+        $rs = array('code' => 0, 'msg' => '', 'info' => array());
+
+        $domain = new Domain_ProductOrder();
+
+        $result = $domain -> confirmReceipt($this);
 
         if($result){
 
