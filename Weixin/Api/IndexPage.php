@@ -32,7 +32,10 @@ class Api_IndexPage extends PhalApi_Api {
      */
     public function getModules(){
         $rs = array('code' => 0, 'msg' => '', 'list' => array());
-        
+        $domain=new Domain_IndexPage();
+        $rel=$domain->getModules();
+        $rs['list']=$rel;
+        return $rs;
     }
 
     /**
