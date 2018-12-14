@@ -110,6 +110,13 @@ class Model_MyAddresss extends PhalApi_Model_NotORM
     }
 
 
+    /**
+     * 获取默认地址
+     */
+    public function getDefaultAddress($openid){
+
+        return DI()->notorm->member_address->where(array('openid'=>$openid,'state'=>'1'))->fetch();
+    }
 
     /**
      * 查看某会员是否有默认地址

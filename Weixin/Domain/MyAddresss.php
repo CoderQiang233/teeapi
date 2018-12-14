@@ -75,6 +75,24 @@ class Domain_MyAddresss
         }
     }
 
+    public function  getDefaultAddress($data){
+
+        try{
+
+            $model=new Model_MyAddresss();
+
+            $res=$model->getDefaultAddress($data->openid);
+
+            return $res;
+
+        }catch (Exception $e){
+
+            DI()->logger->error('获取默认地址失败','openid:'.$data->openid.'异常信息:'.$e);
+
+            return false;
+        }
+    }
+
     public function  updateAddressById($data){
 
         try{
