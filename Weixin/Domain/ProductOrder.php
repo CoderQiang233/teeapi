@@ -84,5 +84,23 @@ class Domain_ProductOrder
         }
     }
 
+    public function confirmReceipt($data){
+
+        try{
+
+            $model=new Model_ProductOrder();
+
+            $res=$model->confirmReceipt($data->product_order_id);
+
+            return $res;
+
+        }catch (Exception $e){
+
+            DI()->logger->error('确认收货失败','订单id:'.$data->product_order_id.'异常信息:'.$e);
+
+            return false;
+        }
+    }
+
 
 }

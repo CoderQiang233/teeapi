@@ -22,7 +22,7 @@ class Api_MyAddresss extends PhalApi_Api
                     'min' => '11',
                     'regex' => "/^0?(13|14|15|17|18)[0-9]{9}$/",'desc'=>'收货人手机号'),
                 'member_id' =>array('name'=>'member_id','type' =>'string','require' => true,'source' => 'post','desc'=>'会员id'),
-                'openid' =>array('name'=>'openid','type' =>'string','require' => true,'source' => 'post','desc'=>'openid'),
+                'session3rd' =>array('name'=>'session3rd','type' =>'string','require' => true,'source' => 'post','desc'=>'session3rd'),
                 'city' =>array('name'=>'city','type' =>'string','require' => true,'source' => 'post','desc'=>'市'),
                 'county' =>array('name'=>'county','type' =>'string','require' => true,'source' => 'post','desc'=>'区'),
                 'province' =>array('name'=>'province','type' =>'string','require' => true,'source' => 'post','desc'=>'省'),
@@ -50,6 +50,9 @@ class Api_MyAddresss extends PhalApi_Api
             'deleteAddressById'=>array(
                 'id'=>array('name'=>'id','type' =>'string','require' => true,'source' => 'post','desc'=>'id'),
             ),
+            'getDefaultAddress'=>array(
+                'session3rd' =>array('name'=>'session3rd','type' =>'string','require' => true,'source' => 'post','desc'=>'session3rd'),
+            ),
         );
     }
 
@@ -60,6 +63,10 @@ class Api_MyAddresss extends PhalApi_Api
     public function insertMyAddresss(){
 
         $rs = array('code' => 0, 'msg' => '', 'info' => array());
+
+        $session = DI()->wechatMini->getSession($this->session3rd);
+
+        $this->openid=$session['openid'];
 
         $domain = new Domain_MyAddresss();
 
@@ -154,6 +161,30 @@ class Api_MyAddresss extends PhalApi_Api
         }
         return $rs;
 
+    }
+
+    /**
+     * 获取默认地址
+     */
+    public function getDefaultAddress(){
+
+        $rs = array('code' => 0, 'msg' => '', 'info' => array());
+
+        $domain = new Domain_MyAddresss();
+
+        $session = DI()->wechatMini->getSession($this->session3rd);
+
+        $this->openid=$session['openid'];
+
+        $res = $domain->getDefaultAddress($this);
+
+        if($res){
+
+            $rs['code'] = 1;
+
+            $rs['info'] = $res;
+        }
+        return $rs;
     }
 
 

@@ -19,4 +19,20 @@ class Domain_Login
 
 
     }
+
+    public  function  userRegister($data)
+    {
+        $model =new  Model_Login();
+
+        return $model->userRegister($data);
+    }
+
+
+    public function insertInvoice($data){
+
+        $model = new Model_Login();
+
+        return $model -> insertInvoice($data);
+
+    }
 }

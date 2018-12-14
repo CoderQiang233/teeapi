@@ -6,6 +6,14 @@
 class Api_IndexPage extends PhalApi_Api {
     public function getRules() {
 
+        return array(
+
+            'search'=>array(
+                'name' 	=> array('name' => 'name', 'type' =>'string', 'require' => true,'desc'=>'商品名称'),
+            )
+
+        );
+
     }
 
 
@@ -28,5 +36,28 @@ class Api_IndexPage extends PhalApi_Api {
         $rel=$domain->getModules();
         $rs['list']=$rel;
         return $rs;
+    }
+
+    /**
+     * 首页检索
+     */
+    public function search(){
+
+        $rs = array('code' => 0, 'msg' => '', 'info' => array());
+
+        $domain = new Domain_IndexPage();
+
+        $result = $domain -> search($this);
+
+        if(is_array($result)){
+
+            $rs['code'] = 1;
+
+            $rs['info'] = $result;
+
+        }
+
+        return $rs;
+
     }
 }

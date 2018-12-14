@@ -14,7 +14,7 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
         $sql='SELECT o.*, p.first_picture '.
             'FROM shop_product_order AS o '.
             'LEFT JOIN shop_product AS p ON o.product_id = p.product_id '.
-            'WHERE status=0 and o.pay = :pay and o.member_id= :member_id ';
+            'WHERE status=0 and o.pay = :pay and o.member_id= :member_id order by o.product_order_id ';
 
         $params =array(':pay'=>$data->pay,':member_id'=>$data->member_id);
 
@@ -28,7 +28,7 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
         $sql='SELECT o.*, p.first_picture '.
             'FROM shop_product_order AS o '.
             'LEFT JOIN shop_product AS p ON o.product_id = p.product_id '.
-            'WHERE status=0 and o.member_id= :member_id ';
+            'WHERE status=0 and o.member_id= :member_id order by o.product_order_id ';
 
         $params =array(':member_id'=>$data->member_id);
 
@@ -55,5 +55,10 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
     public  function deleteProductOrderById($product_order_id){
 
        return DI()->notorm->product_order->where('product_order_id',$product_order_id)->update(array('status'=>'1'));
+    }
+
+    public  function confirmReceipt($product_order_id){
+
+        return DI()->notorm->product_order->where('product_order_id',$product_order_id)->update(array('pay'=>'3'));
     }
 }
