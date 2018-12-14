@@ -17,4 +17,38 @@ class Model_Login extends PhalApi_Model_NotORM
         return $result;
 
     }
+
+
+    public  function userRegister($data){
+
+        try{
+
+            DI()->notorm->members->insert($data);
+
+            return true;
+        }catch (Exception $e){
+
+            return false;
+
+        }
+    }
+
+
+
+    public function insertInvoice($data){
+
+
+
+        try{
+
+            DI()->notorm->members->insert($data);
+
+            return true;
+        }catch (Exception $e){
+
+            return false;
+
+        }
+
+    }
 }
