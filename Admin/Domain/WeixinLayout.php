@@ -22,6 +22,11 @@ class Domain_WeixinLayout
         $rel=$model->editModule($data);
         return $rel;
     }
+    public function deleteModule($id){
+        $model=new Model_WeixinLayout();
+        $rel=$model->deleteModule($id);
+        return $rel;
+    }
     public function getProductOption(){
         $model=new Model_WeixinLayout();
         $rel=$model->getProductOption();

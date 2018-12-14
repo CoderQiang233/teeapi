@@ -21,9 +21,17 @@ class Domain_IndexPage{
             $moduleItem['name']=$item['name'];
             $moduleItem['id']=$item['module_id'];
             $setting=json_decode($item['setting']);
-            if ($setting->product){
+            if (property_exists($setting,'product')){
                 $proid=$setting->product;
-                $pro=$model->getProduct($proid);
+                if(is_array($proid)){
+                    $pro=array();
+                    foreach ($proid as $id){
+                        array_push($pro,$model->getProduct($id));
+                    }
+                }else{
+                    $pro=$model->getProduct($proid);
+                }
+
                 $setting->product=$pro;
             }
             $settingStr=json_encode($setting);
