@@ -23,6 +23,10 @@ class Api_WeixinLayout  extends PhalApi_Api{
                 'id'=> array('name' => 'id', 'type' => 'string', 'require' => true,  'desc' => '模块id'),
 
             ),
+            'deleteModule'=> array(
+                'id'=> array('name' => 'id', 'type' => 'string', 'require' => true,  'desc' => '模块id'),
+
+            ),
         );
     }
 
@@ -64,6 +68,19 @@ class Api_WeixinLayout  extends PhalApi_Api{
         $rs = array('code' => 0, 'msg' => '', 'info' => array());
         $domain = new Domain_WeixinLayout();
         $rel=$domain->editModule($this);
+        if ($rel){
+            $rs['code']=1;
+        }
+        return $rs;
+    }
+    /**
+     * 删除模块
+     * @desc  添加模块
+     */
+    public function deleteModule(){
+        $rs = array('code' => 0, 'msg' => '', 'info' => array());
+        $domain = new Domain_WeixinLayout();
+        $rel=$domain->deleteModule($this->id);
         if ($rel){
             $rs['code']=1;
         }

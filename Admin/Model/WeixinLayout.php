@@ -40,6 +40,11 @@ return $rs;
         $rs   = DI()->notorm->index_layout->where('id', $data->id)->update($arr);
         return $rs;
     }
+    public function deleteModule($id){
+        $rel = DI()->notorm->index_layout->where('module_id', $id)->delete();
+        $rel = DI()->notorm->module->where('id', $id)->delete();
+return $rel;
+    }
     public function getProductOption(){
         $sql = 'SELECT product_id as value ,`name` as text FROM shop_product';
 
