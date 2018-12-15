@@ -56,16 +56,16 @@ return array(
         //微信支付设置
         'wechat' => array(
 
-            'appid' => 'wx8633b6085c8f4cfd',
+            'appid' => 'wx6084b273399ab0d4',
 
             //商户号
-            'mchid' => '1515106821',
+            'mchid' => '1520440971',
 
             //公众号的appsecret
-            'appsecret' => '1c86c1cc65366ac58d295a222daceb1b',
+            'appsecret' => 'd273943e74c608bb3be4d793cc91e15f',
 
             //微信支付Key
-            'key' => 'xiaohongbo1800870522015198579312'
+            'key' => '8934e7d15453e97507ef794cf7b0519d'
         ),
     ),
 

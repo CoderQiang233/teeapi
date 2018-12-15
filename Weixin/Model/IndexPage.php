@@ -24,7 +24,7 @@ class Model_IndexPage extends PhalApi_Model_NotORM{
     }
 
     public function getProduct($id){
-        $data=DI()->notorm->product->select('product_id','name','first_picture','market_price')->where('product_id',$id)->fetchOne();
+        $data=DI()->notorm->product->select('product_id','name','first_picture','market_price','intro')->where('product_id',$id)->fetchOne();
         return $data;
     }
 }
