@@ -10,12 +10,9 @@ class Api_Pay extends PhalApi_Api {
         return array(
 
             'addOrder' => array(
-                'product_name' => array('name' => 'product_name', 'require' => true,'type' => 'string','source' => 'post'),
-                'product_price' => array('name' => 'product_price', 'require' => true,'type' => 'string','source' => 'post'),
-                'product_num' => array('name' => 'product_num','require' => true,'type'=>'string','source' => 'post'),
-                'shipping_address'=>array('name' => 'shipping_address','require' => true,'type'=>'string','source' => 'post'),
-                'product_id'=>array('name' => 'product_id','require' => true,'type'=>'string','source' => 'post'),
-                'session3rd'=>array('name' => 'session3rd','require' => true,'type'=>'string','source' => 'post'),
+                'shipping_address'=>array('name' => 'shipping_address','require' => true,'type'=>'string','source' => 'post','desc'=>'商品名称'),
+                'product_id'=>array('name' => 'product_id','require' => true,'type'=>'string','source' => 'post','desc'=>'商品名称'),
+                'session3rd'=>array('name' => 'session3rd','require' => true,'type'=>'string','source' => 'post','desc'=>'商品名称'),
             ),
 
         );
@@ -41,13 +38,13 @@ class Api_Pay extends PhalApi_Api {
 
         $data = array();
 
-        $data['order_id'] = DI()->pay->createOrderNo();
+        $data['pay_id'] = DI()->pay->createOrderNo();
 
-        $data['product_name'] = $this -> product_name;
-
-        $data['product_price'] = $this -> product_price;
-
-        $data['product_num'] = $this -> product_num;
+//        $data['product_name'] = $this -> product_name;
+//
+//        $data['product_price'] = $this -> product_price;
+//
+//        $data['product_num'] = $this -> product_num;
 
         $data['openid'] = $session['openid'];
 
@@ -55,9 +52,9 @@ class Api_Pay extends PhalApi_Api {
 
       	$data['shipping_address'] = $this -> shipping_address;
 
-      	$data['ship_status'] = 0;
+//      	$data['ship_status'] = 0;
 
-        $data['product_id'] = $this -> product_id;
+//        $data['product_id'] = $this -> product_id;
 
         $data['status'] = 0;
 
