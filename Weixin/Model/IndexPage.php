@@ -14,7 +14,7 @@ class Model_IndexPage extends PhalApi_Model_NotORM{
     public  function search($name)
     {
 
-        return DI()->notorm->product->where('name LIKE ?', '%' . $name . '%')->order('market_price')->fetchAll();
+        return DI()->notorm->product->where(array('name LIKE ?'=> '%' . $name . '%','status'=>'1'))->order('market_price')->fetchAll();
     }
     public function getModules(){
         $sql = 'SELECT * FROM shop_index_layout l LEFT JOIN shop_module m ON l.module_id=m.id ORDER BY l.sort_order';
