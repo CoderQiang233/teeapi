@@ -29,7 +29,7 @@ class Api_login extends PhalApi_Api
                 'nickName' => array('name' => 'nickName', 'require' => true, 'type' => 'string', 'source' => 'post'),
                 'phone' => array('name' => 'phone', 'require' => true, 'type' => 'string', 'source' => 'post'),
                 'headPortrait' => array('name' => 'headPortrait', 'require' => true, 'type' => 'string', 'source' => 'post'),
-                'openid' => array('name' => 'openid', 'require' => true, 'type' => 'string', 'source' => 'post'),
+                'session3rd' => array('name' => 'session3rd', 'require' => true, 'type' => 'string', 'source' => 'post'),
             ),
 
             'insertInvoice' => array(
@@ -110,7 +110,8 @@ class Api_login extends PhalApi_Api
 
         $data['head_portrait'] = $this->headPortrait;
 
-        $data['openid'] = $this->openid;
+        $session = DI()->wechatMini->getSession($this->session3rd);
+        $data['openid'] =$session['openid'];
 
         $domain = new Domain_Login();
 
