@@ -39,19 +39,19 @@ class Domain_MyAddresss
 
     }
 
-    public function  findAddressByMemberId($data){
+    public function  findAddressByopenid($data){
 
         try{
 
             $model=new Model_MyAddresss();
 
-            $res=$model->findAddressByMemberId($data->member_id);
+            $res=$model->findAddressByopenid($data->openid);
 
             return $res;
 
         }catch (Exception $e){
 
-            DI()->logger->error('查看会员地址信息失败','会员id:'.$data->member_id.'异常信息:'.$e);
+            DI()->logger->error('查看会员地址信息失败','openid:'.$data->openid.'异常信息:'.$e);
 
             return false;
         }

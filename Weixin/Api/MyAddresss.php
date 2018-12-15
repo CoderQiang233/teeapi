@@ -28,8 +28,8 @@ class Api_MyAddresss extends PhalApi_Api
                 'province' =>array('name'=>'province','type' =>'string','require' => true,'source' => 'post','desc'=>'省'),
                 'state' =>array('name'=>'state','type' =>'string','require' => true,'source' => 'post','desc'=>'是否为默认地址(0:不是,1:是)'),
             ),
-            'findAddressByMemberId' => array(
-                'member_id' =>array('name'=>'member_id','type' =>'string','require' => true,'source' => 'post','desc'=>'会员id'),
+            'findAddressBysession3rd' => array(
+                'session3rd' =>array('name'=>'session3rd','type' =>'string','require' => true,'source' => 'post','desc'=>'session3rd'),
             ),
             'findAddressById'=>array(
                 'id'=>array('name'=>'id','type' =>'string','require' => true,'source' => 'post','desc'=>'id'),
@@ -82,15 +82,19 @@ class Api_MyAddresss extends PhalApi_Api
     }
 
     /**
-     * 通过会员id查看地址信息
+     * 通过openid查看地址信息
      */
-    public function findAddressByMemberId(){
+    public function findAddressBysession3rd(){
 
         $rs = array('code' => 0, 'msg' => '', 'info' => array());
 
         $domain = new Domain_MyAddresss();
 
-        $res = $domain->findAddressByMemberId($this);
+        $session = DI()->wechatMini->getSession($this->session3rd);
+
+        $this->openid=$session['openid'];
+
+        $res = $domain->findAddressByopenid($this);
 
         if(is_array($res)){
 

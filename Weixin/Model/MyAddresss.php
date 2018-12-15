@@ -55,9 +55,9 @@ class Model_MyAddresss extends PhalApi_Model_NotORM
      * @return mixed
      * 查看我的地址,通过会员id查看地址信息
      */
-    public function findAddressByMemberId($member_id){
+    public function findAddressByopenid($openid){
 
-        return DI()->notorm->member_address->where('member_id',$member_id)->fetchAll();
+        return DI()->notorm->member_address->where('openid',$openid)->fetchAll();
     }
 
 
