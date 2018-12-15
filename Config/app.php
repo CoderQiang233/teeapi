@@ -39,7 +39,7 @@ return array(
      */
     'Pay' => array(
         //异步/同步地址
-        'notify_url' => 'https://testzlgj.zgftlm.com/Public/pay/',
+        'notify_url' => 'https://teeshop.zgftlm.com/Public/pay/',
 
         //支付宝wap端设置
         'aliwap' => array(

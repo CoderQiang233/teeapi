@@ -19,5 +19,5 @@ $GLOBALS['PAY_NOTIFY'] = $GLOBALS['HTTP_RAW_POST_DATA'];
 $_REQUEST['service'] = 'Notify.index';
 $_REQUEST['type']	= 'wechat';
 $_REQUEST['method'] = 'notify';
-require_once(dirname(dirname(dirname(__FILE__))) . '/ntsdmember/index.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/index.php');
 

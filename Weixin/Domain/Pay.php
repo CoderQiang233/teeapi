@@ -14,13 +14,13 @@ class Domain_Pay
 
 
 
-    public function addOrder($data){
+    public function addOrder($data,$products){
 
         $pay = new Model_Pay();
 
 
 
-            if($pay ->addOrder($data)){
+            if($pay ->addOrder($data,$products)){
 
                 return $this->unifiedOrder($data);
 
@@ -41,11 +41,11 @@ class Domain_Pay
      */
     private function unifiedOrder($_data){
 
-        $money=$_data['product_price']*$_data['product_num'];
+        $money=$_data['total'];
         $data = array();
-        $data['order_no'] = $_data['order_id'];
+        $data['order_no'] = $_data['pay_id'];
         $data['title'] = '';
-        $data['body'] = '志梨国际-会费结算';
+        $data['body'] = '福玉茶叶';
         $data['price'] = $money;
         $data['openid'] = $_data['openid'];
         return DI()->pay->buildRequestForm($data);

@@ -18,8 +18,9 @@ class Api_Notify extends PhalApi_Api {
      * @return string 无 根据不同的引擎，返回不同的信息，如果错误信息，则存入日志
      */
     public function index() {
-      
-              //获取接口数据，如果$_REQUEST拿不到数据，则使用file_get_contents函数获取
+        DI() -> logger -> info('进入支付回调: ');
+
+        //获取接口数据，如果$_REQUEST拿不到数据，则使用file_get_contents函数获取
     $post = $_REQUEST;
         DI()->logger->debug('gg111'.json_encode($post));
 
@@ -95,82 +96,45 @@ class Api_Notify extends PhalApi_Api {
     private function updateOrder($out_trade_no){
 
         try{
+            DI() -> logger -> info('进入支付回调: '.$out_trade_no.'$out_trade_no');
+           $order=DI()->notorm->order->where('pay_id',$out_trade_no)->fetchOne();
 
-            $order = DI()->notorm->members_order;
-            $members=DI()->notorm->members;
-            $flag = $order->where('order_id',$out_trade_no)->fetchOne();
+            DI() -> logger -> info('订单数据: '.json_encode($order));
 
-            $id=$members->where('order_id',$out_trade_no)->fetchOne();
+            if(Domain_Pay::ORDER_STATUS_0 == $order['pay']){
+                DI() -> logger -> info('开始修改订单状态: ');
 
-            $shoping=DI()->notorm->commodity;
-            $spOrder=DI()->notorm->commodity_order;
-            $members_address=DI()->notorm->members_address;
-            $spinfo=$shoping->where('id',1)->fetchOne();
-            $address=$members_address->where('member_id',$id['id'])->fetchOne();
-            $price=DI()->notorm->members_level->where('level',$flag['level'])->fetchOne();
-            $spprice=DI()->notorm->commodity->where('id',1)->fetchOne();
-            $data=array(
-                'commodity_name'=>$spinfo['name'],
-                'commodity_price'=>$spprice['agent_price'],
-                'commodity_num'=>$price['level_price'] / $spprice['agent_price'],
-                'members_id'=>$id['id'],
-                'pay'=>1,
-                'create_time'=>date('Y-m-d H:i:s'),
-                'openid'=>$flag['openid'],
-                'order_id'=>$out_trade_no,
-                'shipping_address'=>$address['address'],
-                'province_code'=>$address['map_code'],
-                'province_name'=>$address['province'],
-                'ship_status'=>0,
-                'updatedAt'=>date('Y-m-d H:i:s'),
-                'update_date' => time(),
-                'order_type'=>1,
-                'product_id'=>1,
-            );
-
-            if(Domain_Pay::ORDER_STATUS_0 == $flag['pay']){
-               
-
-                $authorization_number=$this->authorization_number();
-
-                $result = $order ->where('order_id',$out_trade_no)
-                    ->update(array('pay'=>Domain_Pay::ORDER_STATUS_1,'updatedAt'=>date('Y-m-d H:i:s')));
-				DI()->logger->log('調更新22222','时间'.date('Y-m-d H:i:s'),json_encode($result));
-                $result2=$members->where('order_id',$out_trade_no)->update(array('flag'=>Domain_Pay::ORDER_STATUS_1,'authorization_number'=>$authorization_number,'updatedAt'=>date('Y-m-d H:i:s')));
-				DI()->logger->log('調更新33333','时间'.date('Y-m-d H:i:s'),json_encode($result2));
-                if($data['commodity_num'] != 0){
-                    $result3=$spOrder->insert($data);
-                }
-                if($result3){
-                    $inventory=new Api_Notify1();
-                    //$order为注册时插入订单表的订单整条消息
-                    $order=$spOrder->where('order_id',$data['order_id'])->fetchOne();
-                    //调用库存方法
-                    $inventory->allotInventory($order);
-                }
+                $rel=DI()->notorm->order->where('pay_id',$out_trade_no)->update(array('pay'=>Domain_Pay::ORDER_STATUS_1,'updatedAt'=>date('Y-m-d H:i:s')));
               
 
-                if($result == 1){
-                    if($id['referee_phone']){
-                        $this->recordCashBack($id['id']);
-                    }
-                    //发送注册成功短信
-                    $sms = DI()->sms;
-                    $param = array(
-                        'name'=>$flag['name'],
+//                if($rel == 1){
+//                    if($id['referee_phone']){
+//                        $this->recordCashBack($id['id']);
+//                    }
+//                    //发送注册成功短信
+//                    $sms = DI()->sms;
+//                    $param = array(
+//                        'name'=>$flag['name'],
+//
+//                    );
+//                    $response = $sms::sendSms($flag['phone'], 'SMS_145598896', $param);
+//
+//                    if ($response->Code && $response->Code == 'OK') {
+//                        // 发送成功后执行的操作
+//                        DI()->logger->debug('短信发送成功','手机号：'.$flag['phone'].',参数：'.$param);
+//                    }
+//                    return true;
+//                }else{
+//                    return false;
+//                }
+                if (rel==1){
+                    DI() -> logger -> info('修改订单状态成功: ');
 
-                    );
-                    $response = $sms::sendSms($flag['phone'], 'SMS_145598896', $param);
-
-                    if ($response->Code && $response->Code == 'OK') {
-                        // 发送成功后执行的操作
-                        DI()->logger->debug('短信发送成功','手机号：'.$flag['phone'].',参数：'.$param);
-                    }
                     return true;
                 }else{
                     return false;
                 }
-            }elseif (Domain_Pay::ORDER_STATUS_1 == $flag['pay']){
+            }elseif (Domain_Pay::ORDER_STATUS_1 == $order['pay']){
                 return true;
             }
 

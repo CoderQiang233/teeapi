@@ -10,9 +10,13 @@ class Api_Pay extends PhalApi_Api {
         return array(
 
             'addOrder' => array(
-                'shipping_address'=>array('name' => 'shipping_address','require' => true,'type'=>'string','source' => 'post','desc'=>'商品名称'),
-                'product_id'=>array('name' => 'product_id','require' => true,'type'=>'string','source' => 'post','desc'=>'商品名称'),
-                'session3rd'=>array('name' => 'session3rd','require' => true,'type'=>'string','source' => 'post','desc'=>'商品名称'),
+                'shipping_address'=>array('name' => 'shipping_address','require' => true,'type'=>'string','source' => 'post','desc'=>'收货地址'),
+                'products'=>array('name' => 'products','require' => true,'type'=>'string','source' => 'post','desc'=>'商品id'),
+                'session3rd'=>array('name' => 'session3rd','require' => true,'type'=>'string','source' => 'post','desc'=>'session'),
+                'total'=>array('name' => 'total','require' => true,'type'=>'string','source' => 'post','desc'=>'商品总额'),
+                'receiver_name'=>array('name' => 'receiver_name','require' => true,'type'=>'string','source' => 'post','desc'=>'收货人姓名'),
+                'receiver_phone'=>array('name' => 'receiver_phone','require' => true,'type'=>'string','source' => 'post','desc'=>'收货人电话'),
+
             ),
 
         );
@@ -40,21 +44,14 @@ class Api_Pay extends PhalApi_Api {
 
         $data['pay_id'] = DI()->pay->createOrderNo();
 
-//        $data['product_name'] = $this -> product_name;
-//
-//        $data['product_price'] = $this -> product_price;
-//
-//        $data['product_num'] = $this -> product_num;
-
         $data['openid'] = $session['openid'];
 
         $data['pay'] = 0;
+        $data['total'] = $this -> total;
 
       	$data['shipping_address'] = $this -> shipping_address;
-
-//      	$data['ship_status'] = 0;
-
-//        $data['product_id'] = $this -> product_id;
+        $data['receiver_name'] = $this -> receiver_name;
+        $data['receiver_phone'] = $this -> receiver_phone;
 
         $data['status'] = 0;
 
@@ -62,7 +59,9 @@ class Api_Pay extends PhalApi_Api {
 
         $domain = new Domain_Pay();
 
-        $result = $domain->addOrder($data);
+        $products=json_decode($this->products,true);
+
+        $result = $domain->addOrder($data,$products);
 
         if($result){
 
