@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 后台管理商品API
+ * 管理商品
  *
  * @author: dogstar <chanzonghuang@gmail.com> 2014-10-04
  */
@@ -26,7 +26,9 @@ class Api_Product  extends PhalApi_Api{
                 'brand'=> array('name' => 'brand', 'desc' => '商品品牌'),
                 'intro'=> array('name' => 'intro',  'desc' => '商品简介'),
                 'market_price'=> array('name' => 'market_price','require' => true, 'desc' => '市场价格'),
-                'agent_price'=> array('name' => 'agent_price', 'require' => true, 'desc' => '代理价格'),
+                'product_type_id'=> array('name' => 'product_type_id', 'require' => true, 'desc' => '商品类别id'),
+                'brokerage'=> array('name' => 'brokerage', 'require' => true, 'desc' => '佣金比率'),
+
             ),
 
             'update'=> array(
@@ -38,14 +40,17 @@ class Api_Product  extends PhalApi_Api{
                 'brand'=> array('name' => 'brand', 'desc' => '商品品牌'),
                 'intro'=> array('name' => 'intro',  'desc' => '商品简介'),
                 'market_price'=> array('name' => 'market_price','require' => true, 'desc' => '市场价格'),
-                'agent_price'=> array('name' => 'agent_price', 'require' => true, 'desc' => '代理价格'),
+                'product_type_id'=> array('name' => 'product_type_id', 'require' => true, 'desc' => '商品类别id'),
+                'brokerage'=> array('name' => 'brokerage', 'require' => true, 'desc' => '佣金比率'),
             ),
             'deleteById' => array(
-                'id' 	=> array('name' => 'id', 'type' =>'string', 'require' => true)
+                'id' 	=> array('name' => 'id', 'type' =>'string', 'require' => true,'desc' => '商品id')
+            ),
+            'productUpDown' => array(
+                'id' 	=> array('name' => 'id', 'type' =>'string', 'require' => true,'desc' => '商品id'),
+                'status' 	=> array('name' => 'status', 'type' =>'string', 'require' => true,'desc' => '上下架(1:上架,2:下架)')
             ),
 
-            'getMemberLevelList' => array(
-            ),
             'searchProduct' => array(
                 'keyword' => array('name' => 'keyword', 'type' => 'string', 'require' => true, 'desc' => '商品名称'),
 
@@ -87,7 +92,7 @@ class Api_Product  extends PhalApi_Api{
 
         $result = $product->getlist($this);
 
-        if($result){
+        if(is_array($result)){
 
             $rs['code'] = 1;
 
@@ -192,16 +197,15 @@ class Api_Product  extends PhalApi_Api{
 
 
     /**
-     * 会员等级信息列表
-     * @desc  会员等级信息列表
+     * 商品上下架    上下架(1:上架,2:下架)
      */
-    public function getMemberLevelList(){
+    public function productUpDown(){
 
         $rs = array('code' => 0, 'msg' => '', 'info' => array());
 
         $product = new Domain_Product();
 
-        $result = $product->getMemberLevelList();
+        $result = $product->productUpDown($this);
 
         if($result){
 
@@ -213,8 +217,6 @@ class Api_Product  extends PhalApi_Api{
         return $rs;
 
     }
-
-
 
 
 }
