@@ -84,11 +84,11 @@ class Api_login extends PhalApi_Api
     public function checkCode()
     {
         $rs = array('code' => 0, 'msg' => '', 'info' => array());
-//        $cache = DI()->cache->get($this->phone);
-//        if ($cache == null || $cache != $this->vcode) {
-//            $rs['msg'] = '验证码错误';
-//            return $rs;
-//        }
+        $cache = DI()->cache->get($this->phone);
+        if ($cache == null || $cache != $this->vcode) {
+            $rs['msg'] = '验证码错误';
+            return $rs;
+        }
         return 1;
     }
 
