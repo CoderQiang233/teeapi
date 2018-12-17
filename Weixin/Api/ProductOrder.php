@@ -27,6 +27,9 @@ class Api_ProductOrder  extends PhalApi_Api{
             'confirmReceipt' => array(
                 'product_order_id' 	=> array('name' => 'product_order_id', 'type' =>'string', 'require' => true,'desc'=>'id'),
             ),
+            'GetOrderBySession' => array(
+                'session3rd' =>array('name'=>'session3rd','type' =>'string','require' => true,'source' => 'post','desc'=>'session3rd'),
+            ),
 
         );
     }
@@ -68,6 +71,32 @@ class Api_ProductOrder  extends PhalApi_Api{
         $result = $domain -> findAllProductOrder($this);
 
         if(is_array($result)){
+
+            $rs['code'] = 1;
+
+            $rs['info'] = $result;
+
+        }
+
+        return $rs;
+    }
+
+    /**
+     * 通过会员session查看全部会员订单信息
+     */
+    public function GetOrderBySession(){
+
+        $rs = array('code' => 0, 'msg' => '', 'info' => array());
+
+        $domain = new Domain_ProductOrder();
+
+        $session = DI()->wechatMini->getSession($this->session3rd);
+
+        $this->openid=$session['openid'];
+
+        $result = $domain -> GetOrderBySession($this);
+
+        if($result){
 
             $rs['code'] = 1;
 

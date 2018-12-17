@@ -66,6 +66,25 @@ class Domain_ProductOrder
         }
     }
 
+
+    public function GetOrderBySession($data){
+
+        try{
+
+            $model=new Model_ProductOrder();
+
+            $res=$model->GetOrderBySession($data->openid);
+
+            return $res;
+
+        }catch (Exception $e){
+
+            DI()->logger->error('通过session查看订单信息失败','openid:'.$data->openid.'异常信息:'.$e);
+
+            return false;
+        }
+    }
+
     public function deleteProductOrderById($data){
 
         try{
