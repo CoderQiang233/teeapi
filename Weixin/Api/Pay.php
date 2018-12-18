@@ -16,6 +16,7 @@ class Api_Pay extends PhalApi_Api {
                 'total'=>array('name' => 'total','require' => true,'type'=>'string','source' => 'post','desc'=>'商品总额'),
                 'receiver_name'=>array('name' => 'receiver_name','require' => true,'type'=>'string','source' => 'post','desc'=>'收货人姓名'),
                 'receiver_phone'=>array('name' => 'receiver_phone','require' => true,'type'=>'string','source' => 'post','desc'=>'收货人电话'),
+                'province_name'=>array('name' => 'province_name','require' => true,'type'=>'string','source' => 'post','desc'=>'省名'),
 
             ),
 
@@ -46,12 +47,13 @@ class Api_Pay extends PhalApi_Api {
 
         $data['openid'] = $session['openid'];
 
-        $data['pay'] = 0;
+        $data['pay'] = OrderStatus::ORDER_STATUS_0;
         $data['total'] = $this -> total;
 
       	$data['shipping_address'] = $this -> shipping_address;
         $data['receiver_name'] = $this -> receiver_name;
         $data['receiver_phone'] = $this -> receiver_phone;
+        $data['province_name'] = $this -> province_name;
 
         $data['status'] = 0;
 
