@@ -30,6 +30,8 @@ class Api_ProductType  extends PhalApi_Api{
             ),
             'getSelect' => array(
             ),
+            'getSelectAll' => array(
+            ),
 
         );
     }
@@ -59,7 +61,7 @@ class Api_ProductType  extends PhalApi_Api{
     }
 
     /**
-     * 获取选择框数据
+     * 获取选择框数据(两级)
      */
     public function getSelect(){
 
@@ -138,6 +140,27 @@ class Api_ProductType  extends PhalApi_Api{
         $result = $domain->deleteById($this);
 
         if($result){
+
+            $rs['code'] = 1;
+
+            $rs['info'] = $result;
+        }
+
+        return $rs;
+    }
+
+    /**
+     * 获取选择框数据(全部)
+     */
+    public function getSelectAll(){
+
+        $rs = array('code' => 0, 'msg' => '', 'info' => array());
+
+        $productType = new Domain_ProductType();
+
+        $result = $productType->getSelectAll();
+
+        if(is_array($result)){
 
             $rs['code'] = 1;
 

@@ -51,11 +51,16 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
         return $rs;
     }
 
+    public  function GetOrderBySession($openid){
+
+    }
+
 
     public  function deleteProductOrderById($product_order_id){
 
        return DI()->notorm->product_order->where('product_order_id',$product_order_id)->update(array('status'=>'1'));
     }
+
 
     public  function confirmReceipt($product_order_id){
 

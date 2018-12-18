@@ -50,14 +50,22 @@ class Domain_Product
 
     }
 
+    public function productUpDown($data){
 
-    public function getMemberLevelList(){
+        try{
 
-        $product = new Model_Product();
+            $model=new Model_Product();
 
-        return $product ->getMemberLevelList();
+            $model->productUpDown($data);
+
+            return true;
+
+        }catch (Exception $e){
+
+            DI()->logger->error('商品上下架失败','异常信息'.$e);
+
+            return false;
+        }
     }
-
-
 
 }

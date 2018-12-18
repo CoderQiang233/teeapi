@@ -24,7 +24,7 @@ class Model_ProductType extends PhalApi_Model_NotORM
     //获取全部选择框数据
     public function getSelect(){
 
-        $res=DI()->notorm->product_type->select('product_type_id as value,name as label,parent_id,product_type_id')
+        $res=DI()->notorm->product_type->select('product_type_id as value,name as label,parent_id,product_type_id,type_parent')
             ->fetchAll();
 
         return $res;
