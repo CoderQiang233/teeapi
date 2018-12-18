@@ -7,19 +7,21 @@
  */
 class Domain_Member {
 
+    public function getList($data){
+        try{
 
-    public function getMemberList($data)
-    {
-        $model = new Model_Member();
+            $model=new Model_Member();
 
-        $rs = $model->getMemberList($data);
-        return $rs;
-    }
-    public function getMemberLevelCount($data)
-    {
-        $model = new Model_Member();
+            $res=$model->getList($data);
 
-        $rs = $model->getMemberLevelCount($data);
-        return $rs;
+            return $res;
+
+        }catch (Exception $e){
+
+            DI()->logger->error('查看会员列表信息失败','异常信息:'.$e);
+
+            return false;
+        }
     }
-    }
+
+}

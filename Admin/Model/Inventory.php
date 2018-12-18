@@ -31,7 +31,7 @@ class Model_Inventory extends PhalApi_Model_NotORM
                 'remark' => '添加总库存',//备注
             );
             //1.修改商品表的总库存
-            $result=DI()->notorm->commodity->where('id', $data->product_id)->update(array('num' => $now_inventory));
+            $result=DI()->notorm->product->where('product_id', $data->product_id)->update(array('num' => $now_inventory));
             //2.插入库存记录表
             if($result){
                 $rs=DI()->notorm->inventory_record->insert($info);
@@ -87,14 +87,14 @@ class Model_Inventory extends PhalApi_Model_NotORM
             $params = array(':pageSize' => $pageSize,':start_page' => $start_page,':product_id' => $data->product_id);
 
             $sql = 'SELECT r.*,c.name as product_name '
-                . 'FROM inventory_record AS r LEFT JOIN commodity AS c '
-                . 'ON r.product_id=c.id WHERE r.product_id=:product_id and r.total_state=1 '
+                . 'FROM shop_inventory_record AS r LEFT JOIN shop_product AS c '
+                . 'ON r.product_id=c.product_id WHERE r.product_id=:product_id and r.total_state=1 '
                 . $where
-                .' order by r.id desc  limit :start_page,:pageSize ';
+                .' order by r.inventory_record_id desc  limit :start_page,:pageSize ';
 
             $sqls = 'SELECT r.*,c.name as product_name '
-                . 'FROM inventory_record AS r LEFT JOIN commodity AS c '
-                . 'ON r.product_id=c.id WHERE r.product_id=:product_id and r.total_state=1 '
+                . 'FROM shop_inventory_record AS r LEFT JOIN shop_product AS c '
+                . 'ON r.product_id=c.product_id WHERE r.product_id=:product_id and r.total_state=1 '
                 . $where;
 
             $recordTotal= DI()->notorm->inventory_record->queryAll($sql,$params);

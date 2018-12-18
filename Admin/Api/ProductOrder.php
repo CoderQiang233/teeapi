@@ -24,9 +24,8 @@ class Api_ProductOrder  extends PhalApi_Api{
             ),
             'getProductOrderList'=> array(
                 'ship_status' => array('name' => 'ship_status', 'type' => 'string',  'desc' => '发货状态'),
-                'order_id' => array('name' => 'order_id', 'type' => 'string',  'desc' => '订单编号'),
+                'pay_id' => array('name' => 'pay_id', 'type' => 'string',  'desc' => '微信支付编号'),
                 'name' => array('name' => 'name', 'type' => 'string',  'desc' => '会员姓名'),
-                'phone' => array('name' => 'phone', 'type' => 'string',  'desc' => '会员手机号'),
                 'updatedAt' => array('name' => 'updatedAt', 'type' => 'string',  'desc' => '订单创建时间'),
                 'pageSize'=> array('name' => 'pageSize',  'type' => 'int', 'require' => true, 'desc' => '每页条数'),
                 'pageIndex'=> array('name' => 'pageIndex', 'type' => 'int', 'require' => true,  'desc' => '跳转页码'),
