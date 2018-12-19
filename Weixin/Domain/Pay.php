@@ -32,8 +32,10 @@ class Domain_Pay
 
 
     }
-  
 
+public function rePay($data){
+    return $this->unifiedOrder($data);
+}
 
     /**
      * 支付接口

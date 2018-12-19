@@ -112,7 +112,7 @@ class Domain_ProductOrder
 
             $model=new Model_ProductOrder();
 
-            $res=$model->confirmReceipt($data->product_order_id);
+            $res=$model->confirmReceipt($data->order_id);
 
             return $res;
 

@@ -28,7 +28,7 @@ class Model_Pay extends PhalApi_Model_NotORM{
 //            }
             $products['order_id']=$rel['id'];
             $rel=DI()->notorm->order_product->insert($products);
-            return true;
+            return $rel['id'];
 
 
 

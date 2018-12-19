@@ -25,7 +25,7 @@ class Api_ProductOrder  extends PhalApi_Api{
                 'product_order_id' 	=> array('name' => 'product_order_id', 'type' =>'string', 'require' => true,'desc'=>'id'),
             ),
             'confirmReceipt' => array(
-                'product_order_id' 	=> array('name' => 'product_order_id', 'type' =>'string', 'require' => true,'desc'=>'id'),
+                'order_id' 	=> array('name' => 'order_id', 'type' =>'string', 'require' => true,'desc'=>'id'),
             ),
             'GetOrderBySession' => array(
                 'session3rd' =>array('name'=>'session3rd','type' =>'string','require' => true,'source' => 'post','desc'=>'session3rd'),
