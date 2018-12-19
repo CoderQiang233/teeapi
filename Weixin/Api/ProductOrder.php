@@ -31,6 +31,10 @@ class Api_ProductOrder  extends PhalApi_Api{
                 'session3rd' =>array('name'=>'session3rd','type' =>'string','require' => true,'source' => 'post','desc'=>'session3rd'),
                 'status'=>array('name'=>'status','type' =>'string','require' => false,'source' => 'post','desc'=>'status')
                 ),
+            'OrderByPayID' => array(
+                'pay_id' =>array('name'=>'pay_id','type' =>'string','require' => true,'source' => 'post','desc'=>'pay_id'),
+
+            ),
 
         );
     }
@@ -175,6 +179,26 @@ class Api_ProductOrder  extends PhalApi_Api{
     }
 
 
+    /**
+     * 通过pay_id查看订单信息
+     */
+    public function OrderByPayID(){
+
+        $rs = array('code' => 0, 'msg' => '', 'info' => array());
+
+        $domain = new Domain_ProductOrder();
+
+        $result = $domain -> OrderByPayID($this);
+
+        if($result){
+
+            $rs['code'] = 1;
+
+            $rs['info'] = $result;
+        }
+
+        return $rs;
+    }
    
 
 }

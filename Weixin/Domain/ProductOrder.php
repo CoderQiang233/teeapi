@@ -125,4 +125,23 @@ class Domain_ProductOrder
     }
 
 
+    public function OrderByPayID($data){
+
+        try{
+
+            $model=new Model_ProductOrder();
+
+            $res=$model->OrderByPayID($data->pay_id);
+
+            return $res;
+
+        }catch (Exception $e){
+
+            DI()->logger->error('通过pay_id查看订单信息失败','pay_id:'.$data->pay_id.'异常信息:'.$e);
+
+            return false;
+        }
+    }
+
+
 }

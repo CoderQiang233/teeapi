@@ -10,12 +10,12 @@ class Domain_PromotionCenter
 {
 
 
-    public function getProudct($id)
+    public function getInfo($data)
     {
 
-        $model = new Model_Product();
+        $model = new Model_PromotionCenter();
 
-        return $model->getProudct($id);
+        return $model->getInfo($data->openid);
 
 
     }

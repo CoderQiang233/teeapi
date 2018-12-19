@@ -86,7 +86,7 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
 
     public  function confirmReceipt($order_id){
 
-        $result1=DI()->notorm->order->where('order_id',$order_id)->update(array('pay'=>'3'));
+        $result1=DI()->notorm->order->where('order_id',$order_id)->update(array('pay'=>Common_OrderStatus::ORDER_STATUS_3));
         if($result1){
             $shop_order_product=DI()->notorm->order_product->where(array('order_id'=>$order_id,'promoter is not null'))->fetchAll();
         }
@@ -107,5 +107,18 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
         }
 
         return $result1;
+    }
+
+    public  function OrderByPayID($pay_id){
+
+        $order=DI()->notorm->order->where('pay_id',$pay_id)->fetchOne();
+
+        $product=DI()->notorm->order_product->where('order_id',$order['order_id'])->fetchAll();
+
+        $order['product']=$product;
+
+        return $order;
+
+
     }
 }

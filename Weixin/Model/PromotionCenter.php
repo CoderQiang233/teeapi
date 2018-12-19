@@ -8,14 +8,36 @@
 class Model_PromotionCenter extends PhalApi_Model_NotORM
 {
 
-    public function getProudct($id){
+    public function getInfo($openid){
 
-        $result = DI()->notorm->product->where(array("product_id" => $id ))->fetchOne();
+        $member=DI()->notorm->members->where('openid',$openid)->fetchOne();
 
-        $banner=DI()->notorm->product_banner->where(array("product_id" => $id ))->fetchAll();
+        $commission_history=DI()->notorm->commission_history->where(array('member_id'=>$member['id'],'status'=>1,'type'=>0))->fetchAll();
 
-        $result['banner_list']=$banner;
-        return $result;
+        $PromotionMoney=0;
+
+        if($commission_history){
+            foreach ($commission_history as $item){
+                $PromotionMoney+=$item['total'];
+            }
+        }
+
+        $consumption=DI()->notorm->commission_history->where(array('member_id'=>$member['id'],'status'=>1,'type'=>1))->fetchAll();
+
+        $consumptionMoney=0;
+
+        if($consumption){
+            foreach ($consumption as $item){
+                $consumptionMoney+=$item['total'];
+            }
+        }
+
+        $member['PromotionMoney']=$PromotionMoney;
+
+
+        $member['consumptionMoney']=$consumptionMoney;
+
+        return $member;
     }
 
 
