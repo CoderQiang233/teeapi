@@ -118,7 +118,7 @@ class Api_login extends PhalApi_Api
 
         $session = DI()->wechatMini->getSession($this->session3rd);
         $data['openid'] =$session['openid'];
-
+        $data['balance'] =0.00;
         $domain = new Domain_Login();
 
         $res = $domain->userRegister($data);
