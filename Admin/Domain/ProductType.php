@@ -146,6 +146,29 @@ class Domain_ProductType
 
     }
 
+    public function getSelectAll(){
+
+        try{
+
+            $productType = new Model_ProductType();
+
+            $res=$productType ->getSelect();
+
+            if(count($res)>0) {
+
+                $res = $this->getTree($res, 0);
+            }
+
+            return $res;
+
+        }catch (Exception $e){
+
+            DI()->logger->error('获取全部选择框数据失败','异常信息:'.$e);
+
+            return false;
+        }
+    }
+
 
 
 }

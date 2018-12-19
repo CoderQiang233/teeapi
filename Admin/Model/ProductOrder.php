@@ -19,29 +19,22 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
 
         $pageIndex='';//当前页
 
-        $order_id=$data->order_id;//订单编号
+        $pay_id=$data->pay_id;//订单编号
 
         $name=$data->name;//会员姓名
-
-        $phone=$data->phone;//会员手机号
 
         $updatedAt=$data->updatedAt;//订单创建时间
 
         $ship_status=$data->ship_status;//发货状态
 
-        if('undefined' !==$order_id  && '' !== $order_id && null !== $order_id ){
+        if('undefined' !==$pay_id  && '' !== $pay_id && null !== $pay_id ){
 
-            $where=$where." AND o.order_id='".$order_id."'";
+            $where=$where." AND o.pay_id='".$pay_id."'";
         }
 
         if('undefined' !==$name  && '' !== $name && null !== $name ){
 
             $where=$where." AND m.name='".$name."'";
-        }
-
-        if('undefined' !==$phone  && '' !== $phone && null !== $phone ){
-
-            $where=$where." AND m.phone='".$phone."'";
         }
 
         if('undefined' !==$ship_status  && '' !== $ship_status && null !== $ship_status ){
@@ -76,35 +69,33 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
 
         $params = array(':pageSize' => $pageSize,':start_page' => $start_page);
 
-        $sql = 'SELECT o.*,m.name,m.phone '
-            . 'FROM commodity_order AS o LEFT JOIN members AS m '
-            . 'ON o.members_id=m.id WHERE o.pay=1 and o.commodity_num>0 '
+        $sql = 'SELECT o.*,m.nick_name '
+            . 'FROM shop_order AS o LEFT JOIN shop_members AS m '
+            . 'ON o.member_id=m.id WHERE o.pay>0 and o.status=0  '
             . $where
-            .' order by o.id desc  limit :start_page,:pageSize ';
+            .' order by o.order_id desc  limit :start_page,:pageSize ';
 
-        $sqls = 'SELECT o.*,m.name,m.phone '
-            . 'FROM commodity_order AS o LEFT JOIN members AS m '
-            . 'ON o.members_id=m.id WHERE o.pay=1 and o.commodity_num>0 '
+        $sqls = 'SELECT o.*,m.nick_name '
+            . 'FROM shop_order AS o LEFT JOIN shop_members AS m '
+            . 'ON o.member_id=m.id WHERE o.pay>0 and o.status=0 '
             . $where;
 
-        $orderAll= DI()->notorm->commodity_order->queryAll($sql,$params);
+        $orderAll= DI()->notorm->order->queryAll($sql,$params);
 
-        for($i=0;$i<count($orderAll);$i++){
-            $order=$orderAll[$i];
-            //总的发货数量
-            $shipnum=DI()->notorm->commodity_express->where('order_id',$order['id'])->sum('ship_num');
-            $orderAll[$i]['shipnum']=$shipnum==null?0:$shipnum;
-        }
+//        for($i=0;$i<count($orderAll);$i++){
+//            $order=$orderAll[$i];
+//            //总的发货数量
+//            $shipnum=DI()->notorm->product_express->where('order_id',$order['order_id'])->sum('ship_num');
+//            $orderAll[$i]['shipnum']=$shipnum==null?0:$shipnum;
+//        }
 
-        $total = count(DI()->notorm->commodity_order->queryAll($sqls));
+        $total = count(DI()->notorm->order->queryAll($sqls));
 
         return array(
             'orderAll' => $orderAll,
             'total' => $total,
             'pageIndex' => $pageIndex,
         );
-
-
 
     }
     public function orderPay($data){

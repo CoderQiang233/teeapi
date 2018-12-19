@@ -98,35 +98,29 @@ class Api_Notify extends PhalApi_Api {
         try{
             DI() -> logger -> info('进入支付回调: '.$out_trade_no.'$out_trade_no');
            $order=DI()->notorm->order->where('pay_id',$out_trade_no)->fetchOne();
-
+            $member=DI()->notorm->member->where('id',$order['member_id'])->fetchOne();
             DI() -> logger -> info('订单数据: '.json_encode($order));
 
-            if(Domain_Pay::ORDER_STATUS_0 == $order['pay']){
+            if(OrderStatus::ORDER_STATUS_0 == $order['pay']){
                 DI() -> logger -> info('开始修改订单状态: ');
 
-                $rel=DI()->notorm->order->where('pay_id',$out_trade_no)->update(array('pay'=>Domain_Pay::ORDER_STATUS_1,'updatedAt'=>date('Y-m-d H:i:s')));
+                $rel=DI()->notorm->order->where('pay_id',$out_trade_no)->update(array('pay'=>OrderStatus::ORDER_STATUS_1,'updatedAt'=>date('Y-m-d H:i:s'),'update_date'=>time()));
               
+//               修改库存
+                DI() -> logger -> info('开始修改商品库存: ');
 
-//                if($rel == 1){
-//                    if($id['referee_phone']){
-//                        $this->recordCashBack($id['id']);
-//                    }
-//                    //发送注册成功短信
-//                    $sms = DI()->sms;
-//                    $param = array(
-//                        'name'=>$flag['name'],
-//
-//                    );
-//                    $response = $sms::sendSms($flag['phone'], 'SMS_145598896', $param);
-//
-//                    if ($response->Code && $response->Code == 'OK') {
-//                        // 发送成功后执行的操作
-//                        DI()->logger->debug('短信发送成功','手机号：'.$flag['phone'].',参数：'.$param);
-//                    }
-//                    return true;
-//                }else{
-//                    return false;
-//                }
+                $products=DI()->notorm->order_product->where('order_id',$order['order_id'])->fetchAll();
+
+                foreach ($products as $item){
+                    $product=DI()->notorm->product->where('product_id',$item['product_id'])->fetchOne();
+                    $before=$product['num'];
+                    $num=$item['quantity'];
+                    $now=$before-$num;
+                    DI()->notorm->commodity->where('product_id',$item['product_id'])->update(array('num'=>$now));
+                    $this->insertTotalInventoryRecord($item,$member,$product);
+
+                }
+
                 if (rel==1){
                     DI() -> logger -> info('修改订单状态成功: ');
 
@@ -134,7 +128,7 @@ class Api_Notify extends PhalApi_Api {
                 }else{
                     return false;
                 }
-            }elseif (Domain_Pay::ORDER_STATUS_1 == $order['pay']){
+            }elseif (OrderStatus::ORDER_STATUS_1 == $order['pay']){
                 return true;
             }
 
@@ -147,6 +141,29 @@ class Api_Notify extends PhalApi_Api {
             return false;
         }
 
+    }
+    /**
+     * @param $order
+     * @param $member
+     * @param $product
+     * @return mixed
+     * 添加总部出库信息
+     */
+    public function insertTotalInventoryRecord($order_product,$member,$product){
+
+        $info=array(
+            'product_id' => $order_product['product_id'],//商品id
+            'member_id' => $member['members_id'],//会员id
+            'name' =>$member['nick_name'],//会员真实姓名
+            'state' => '1',//出库，入库(1出库   2入库)
+            'date_added' => date("Y-m-d H:i:s"),//创建时间
+            'before_inventory' => $product['num'],//出入库前库存
+            'change_inventory' => $order_product['quantity'],//改变的库存(出入库数量)
+            'now_inventory' => $product['num']-$order_product['quantity'],//现在库存
+            'total_state' => '1',//总部, 代理(1总部   2代理)
+            'remark' => $member['name'].'购买出库',//备注
+        );
+        return DI()->notorm->inventory_record->insert($info);
     }
     /**
      * 新注册用户信息（带推荐人）记录到返现明细表

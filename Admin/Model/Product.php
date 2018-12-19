@@ -10,7 +10,7 @@ include_once '../../Config/app.php';
 class Model_Product extends PhalApi_Model_NotORM
 {
  public function searchProduct($keyword){
-     $products=DI()->notorm->product->select('product_id','name')->where('name LIKE ? ', '%'.$keyword.'%')->order('name DESC')->fetchAll();
+     $products=DI()->notorm->product->select('product_id','name')->where(array('name LIKE ? '=> '%'.$keyword.'%','status'=>1))->order('name DESC')->fetchAll();
      return $products;
  }
     //获取商品列表
@@ -22,58 +22,74 @@ class Model_Product extends PhalApi_Model_NotORM
 
         $name='';
 
+        $where='';
+
         if('undefined' !== $data->pageSize && '' !== $data->pageSize && null !== $data->pageSize ){
 
             $pageSize=$data->pageSize;
-
         }
 
         if('undefined' !== $data->pageIndex && '' !== $data->pageIndex && null !== $data->pageIndex ){
 
             $pageIndex=$data->pageIndex;
-
         }
-
-        $start_page=$pageSize*($pageIndex-1);
 
         if('undefined' !== $data->name && '' !== $data->name && null !== $data->name ){
 
             $name=$data->name;
 
-            $products=DI()->notorm->commodity->where('name LIKE ? ', '%'.$name.'%')->limit($start_page, $pageSize)->order('id DESC')->fetchAll();
-
-            $total=count(DI()->notorm->commodity->where('name LIKE ? ', '%'.$name.'%')->fetchAll());
-        }else{
-
-            $products=DI()->notorm->commodity->limit($start_page, $pageSize)->order('id DESC')->fetchAll();
-
-            $total=count(DI()->notorm->commodity->fetchAll());
+            $where=$where." AND p.name like '%".$name."%'";
         }
+
+        $start_page=$pageSize*($pageIndex-1);
+
+        $params = array(':pageSize' => $pageSize,':start_page' => $start_page);
+
+        $sql = 'SELECT p.*,t.name as type_name '
+            . 'FROM shop_product AS p LEFT JOIN shop_product_type AS t '
+            . 'ON p.product_type_id=t.product_type_id WHERE 1=1  '
+            . $where
+            .' order by p.product_id desc  limit :start_page,:pageSize ';
+
+        $sqls = 'SELECT p.*,t.name as type_name '
+            . 'FROM shop_product AS p LEFT JOIN shop_product_type AS t '
+            . 'ON p.product_type_id=t.product_type_id WHERE 1=1  '
+            . $where;
+
+        $products= DI()->notorm->product->queryAll($sql,$params);
+
         $imgUrl=DI()->config->get('app.imagePath');
 
         for ($i=0;$i<count($products);$i++){
             $product=$products[$i];
-            $bannerAll=DI()->notorm->banner->select('id as uid,path as url')->where('product_id',$product['id']) -> fetchAll();
+            $bannerAll=DI()->notorm->product_banner->select('banner_id as uid,path as url')->where('product_id',$product['product_id']) -> fetchAll();
             if(count($bannerAll)>0){
                 for($j=0;$j<count($bannerAll);$j++){
                     $bannerAll[$j]['url']=$imgUrl.$bannerAll[$j]['url'];
                 }
                 $products[$i]['banners']=$bannerAll;
             }
-            $agentInventory=DI()->notorm->agent_inventory->where('product_id',$product['id']) ->sum('inventory_num');
-            $products[$i]['agentInventory']=$agentInventory==null?0:$agentInventory;
         }
+
+        $total = count(DI()->notorm->product->queryAll($sqls));
+
         return array(
             'products' => $products,
             'total' => $total,
             'pageIndex' => $pageIndex,
         );
-
     }
 
     public function insertProduct($data){
 
         try{
+
+            $typeIds=json_decode($data->product_type_id);
+
+            if(count($typeIds)>0){
+                $product_type_id=$typeIds[count($typeIds)-1];
+            }
+
             $info=array(
                 'name' => $data->name,
                 'first_picture' => $data->first_picture,
@@ -82,10 +98,13 @@ class Model_Product extends PhalApi_Model_NotORM
                 'brand' => $data->brand,
                 'intro' => $data->intro,
                 'market_price' => $data->market_price,
-                'agent_price' => $data->agent_price,
+                'brokerage' => $data->brokerage,
                 'num' => 0,//默认库存数为0
+                'product_type_id' => $product_type_id,
+                'type_parent' => json_encode($typeIds),
+                'status' => 1,//上下架(1:上架,2:下架)
             );
-            $result=DI()->notorm->commodity->insert($info);
+            $result=DI()->notorm->product->insert($info);
 
             $banners=json_decode($data->banners);
 
@@ -95,18 +114,19 @@ class Model_Product extends PhalApi_Model_NotORM
 
                     $rows[$i]['path'] = $banners[$i];
 
-                    $rows[$i]['is_use'] = '2';//是否使用(0未使用,1已使用)
-
                     $rows[$i]['product_id'] = $result['id'];
 
                     $rows[$i]['create_time'] = date("Y-m-d H:i:s");
                 }
-                $rs = DI()->notorm->banner->insert_multi($rows);
+                $rs = DI()->notorm->product_banner->insert_multi($rows);
             }
 
             return true;
 
         }catch (Exception $e){
+
+            DI()->logger->error('新增商品失败','异常信息:'.$e);
+
             return false;
         }
     }
@@ -116,6 +136,12 @@ class Model_Product extends PhalApi_Model_NotORM
 
         try{
 
+            $typeIds=json_decode($data->product_type_id);
+
+            if(count($typeIds)>0){
+                $product_type_id=$typeIds[count($typeIds)-1];
+            }
+
             $info=array(
                 'name' => $data->name,
                 'first_picture' => $data->first_picture,
@@ -123,15 +149,17 @@ class Model_Product extends PhalApi_Model_NotORM
                 'brand' => $data->brand,
                 'intro' => $data->intro,
                 'market_price' => $data->market_price,
-                'agent_price' => $data->agent_price,
+                'brokerage' => $data->brokerage,
+                'product_type_id' => $product_type_id,
+                'type_parent' => json_encode($typeIds),
             );
             //Step 1: 开启事务
-            DI()->notorm->beginTransaction('db_daili');
+            DI()->notorm->beginTransaction('db_teeshop');
             //修改商品表
-            DI()->notorm->commodity->where('id', $data->id)->update($info);
+            DI()->notorm->product->where('product_id', $data->id)->update($info);
 
             //删除banner表中相关数据
-            DI()->notorm->banner->where('product_id', $data->id)->delete();
+            DI()->notorm->product_banner->where('product_id', $data->id)->delete();
 
             //插入banner表
             $banners=json_decode($data->banners);
@@ -142,17 +170,15 @@ class Model_Product extends PhalApi_Model_NotORM
 
                     $rows[$i]['path'] = $banners[$i];
 
-                    $rows[$i]['is_use'] = '2';//是否使用(0未使用,1已使用)
-
                     $rows[$i]['product_id'] = $data->id;
 
                     $rows[$i]['create_time'] = date("Y-m-d H:i:s");
                 }
-                $rs = DI()->notorm->banner->insert_multi($rows);
+                $rs = DI()->notorm->product_banner->insert_multi($rows);
             }
 
             //Step 3: 提交事务
-            DI()->notorm->commit('db_daili');
+            DI()->notorm->commit('db_teeshop');
 
             return true;
 
@@ -160,7 +186,7 @@ class Model_Product extends PhalApi_Model_NotORM
 
             DI()->logger->log('updateProduct','商品修改失败',$e);
 
-            DI()->notorm->rollback('db_daili'); // 回滚
+            DI()->notorm->rollback('db_teeshop'); // 回滚
 
             return false;
         }
@@ -168,9 +194,9 @@ class Model_Product extends PhalApi_Model_NotORM
 
     public function getById($id){
 
-        $result=DI()->notorm->commodity->where('id',$id) -> fetchOne();
+        $result=DI()->notorm->product->where('product_id',$id) -> fetchOne();
 
-        $bannerAll=DI()->notorm->banner->where('product_id',$id) -> fetchAll();
+        $bannerAll=DI()->notorm->product_banner->where('product_id',$id) -> fetchAll();
 
         $banners=array();
 
@@ -190,10 +216,10 @@ class Model_Product extends PhalApi_Model_NotORM
 
         try{
             //删除
-            DI()->notorm->commodity->where('id', $id)->delete();
+            DI()->notorm->product->where('product_id', $id)->delete();
 
             //删除
-            DI()->notorm->banner->where('product_id', $id)->delete();
+            DI()->notorm->product_banner->where('product_id', $id)->delete();
 
             return "success";
 
@@ -205,21 +231,12 @@ class Model_Product extends PhalApi_Model_NotORM
         }
     }
 
-    public function getMemberLevelList(){
 
-        try{
+    public function  productUpDown($data){
 
-            return DI()->notorm->members_level->fetchAll();
-
-        }catch (Exception $e){
-
-            DI()->logger->log('findmemberlevel','查看会员等级',$e);
-
-            return false;
-        }
-
-
+     return DI()->notorm->product->where('product_id',$data->id)->update(array('status'=>$data->status));
     }
+
 
 
 }

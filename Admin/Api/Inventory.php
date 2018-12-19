@@ -28,20 +28,20 @@ class Api_Inventory  extends PhalApi_Api{
                 'pageSize'=> array('name' => 'pageSize',  'type' => 'int', 'require' => true, 'desc' => '每页条数'),
                 'pageIndex'=> array('name' => 'pageIndex', 'type' => 'int', 'require' => true,  'desc' => '跳转页码'),
             ),
-            'getInventoryAgent'=> array(
-                'product_id' => array('name' => 'product_id', 'type' => 'string', 'desc' => '商品id'),
-                'product_name' => array('name' => 'product_name', 'type' => 'string', 'desc' => '商品名称'),
-                'name' => array('name' => 'name', 'type' => 'string',  'desc' => '会员真实姓名'),
-                'pageSize'=> array('name' => 'pageSize',  'type' => 'int', 'require' => true, 'desc' => '每页条数'),
-                'pageIndex'=> array('name' => 'pageIndex', 'type' => 'int', 'require' => true,  'desc' => '跳转页码'),
-            ),
-            'getAgentProductRecord'=> array(
-                'product_id' => array('name' => 'product_id', 'type' => 'string', 'require' => true, 'desc' => '商品id'),
-                'member_id'=> array('name' => 'member_id',  'type' => 'int', 'require' => true,  'desc' => '会员id'),
-                'state' => array('name' => 'state', 'type' => 'string',  'desc' => '出库，入库(1出库   2入库)'),
-                'pageSize'=> array('name' => 'pageSize',  'type' => 'int', 'require' => true, 'desc' => '每页条数'),
-                'pageIndex'=> array('name' => 'pageIndex', 'type' => 'int', 'require' => true,  'desc' => '跳转页码'),
-            ),
+//            'getInventoryAgent'=> array(
+//                'product_id' => array('name' => 'product_id', 'type' => 'string', 'desc' => '商品id'),
+//                'product_name' => array('name' => 'product_name', 'type' => 'string', 'desc' => '商品名称'),
+//                'name' => array('name' => 'name', 'type' => 'string',  'desc' => '会员真实姓名'),
+//                'pageSize'=> array('name' => 'pageSize',  'type' => 'int', 'require' => true, 'desc' => '每页条数'),
+//                'pageIndex'=> array('name' => 'pageIndex', 'type' => 'int', 'require' => true,  'desc' => '跳转页码'),
+//            ),
+//            'getAgentProductRecord'=> array(
+//                'product_id' => array('name' => 'product_id', 'type' => 'string', 'require' => true, 'desc' => '商品id'),
+//                'member_id'=> array('name' => 'member_id',  'type' => 'int', 'require' => true,  'desc' => '会员id'),
+//                'state' => array('name' => 'state', 'type' => 'string',  'desc' => '出库，入库(1出库   2入库)'),
+//                'pageSize'=> array('name' => 'pageSize',  'type' => 'int', 'require' => true, 'desc' => '每页条数'),
+//                'pageIndex'=> array('name' => 'pageIndex', 'type' => 'int', 'require' => true,  'desc' => '跳转页码'),
+//            ),
 
         );
     }

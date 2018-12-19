@@ -46,7 +46,7 @@ return $rs;
 return $rel;
     }
     public function getProductOption(){
-        $sql = 'SELECT product_id as value ,`name` as text FROM shop_product';
+        $sql = 'SELECT product_id as value ,`name` as text FROM shop_product where status=1';
 
         $rows =$this->getORM()->queryAll($sql);
         return $rows;

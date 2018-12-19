@@ -19,6 +19,8 @@ class Model_Pay extends PhalApi_Model_NotORM{
             $members=DI()->notorm->members->where('openid',$openid)->fetchOne();
             $member_id=$members['id'];
             $data['member_id']=$member_id;
+            $province=DI()->notorm->province->where('name',$data['province_name'])->fetchOne();
+            $data['province_code']=$province['map_code'];
             $rel=DI()->notorm->order->insert($data);
             $productArr=array();
 //            foreach ($products as $item){
