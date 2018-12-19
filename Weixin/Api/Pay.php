@@ -17,6 +17,8 @@ class Api_Pay extends PhalApi_Api {
                 'receiver_name'=>array('name' => 'receiver_name','require' => true,'type'=>'string','source' => 'post','desc'=>'收货人姓名'),
                 'receiver_phone'=>array('name' => 'receiver_phone','require' => true,'type'=>'string','source' => 'post','desc'=>'收货人电话'),
                 'province_name'=>array('name' => 'province_name','require' => true,'type'=>'string','source' => 'post','desc'=>'省名'),
+                'balance_pay'=>array('name' => 'balance_pay','require' => true,'type'=>'string','source' => 'post','desc'=>'余额支付'),
+                'cash_pay'=>array('name' => 'cash_pay','require' => true,'type'=>'string','source' => 'post','desc'=>'现金支付'),
 
             ),
 
@@ -46,14 +48,15 @@ class Api_Pay extends PhalApi_Api {
         $data['pay_id'] = DI()->pay->createOrderNo();
 
         $data['openid'] = $session['openid'];
-
-        $data['pay'] = OrderStatus::ORDER_STATUS_0;
+        $data['pay'] = Common_OrderStatus::ORDER_STATUS_0;
         $data['total'] = $this -> total;
 
       	$data['shipping_address'] = $this -> shipping_address;
         $data['receiver_name'] = $this -> receiver_name;
         $data['receiver_phone'] = $this -> receiver_phone;
         $data['province_name'] = $this -> province_name;
+        $data['balance_pay'] = $this -> balance_pay;
+        $data['cash_pay'] = $this -> cash_pay;
 
         $data['status'] = 0;
 

@@ -5,8 +5,8 @@
  * Date: 2018/12/18
  * Time: 11:27
  */
-class OrderStatus{
-    const ORDER_STATUS_0 = 0; // 未支付
+class Common_OrderStatus{
+     const ORDER_STATUS_0 = 0; // 未支付
 
     const ORDER_STATUS_1 = 1; // 已支付
 

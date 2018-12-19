@@ -98,13 +98,13 @@ class Api_Notify extends PhalApi_Api {
         try{
             DI() -> logger -> info('进入支付回调: '.$out_trade_no.'$out_trade_no');
            $order=DI()->notorm->order->where('pay_id',$out_trade_no)->fetchOne();
-            $member=DI()->notorm->member->where('id',$order['member_id'])->fetchOne();
+            $member=DI()->notorm->members->where('id',$order['member_id'])->fetchOne();
             DI() -> logger -> info('订单数据: '.json_encode($order));
 
-            if(OrderStatus::ORDER_STATUS_0 == $order['pay']){
+            if(Common_OrderStatus::ORDER_STATUS_0 == $order['pay']){
                 DI() -> logger -> info('开始修改订单状态: ');
 
-                $rel=DI()->notorm->order->where('pay_id',$out_trade_no)->update(array('pay'=>OrderStatus::ORDER_STATUS_1,'updatedAt'=>date('Y-m-d H:i:s'),'update_date'=>time()));
+                $rel=DI()->notorm->order->where('pay_id',$out_trade_no)->update(array('pay'=>Common_OrderStatus::ORDER_STATUS_1,'updatedAt'=>date('Y-m-d H:i:s'),'update_date'=>time()));
               
 //               修改库存
                 DI() -> logger -> info('开始修改商品库存: ');
@@ -116,19 +116,37 @@ class Api_Notify extends PhalApi_Api {
                     $before=$product['num'];
                     $num=$item['quantity'];
                     $now=$before-$num;
-                    DI()->notorm->commodity->where('product_id',$item['product_id'])->update(array('num'=>$now));
+                    DI() -> logger -> info($item['product_id'].'修改库存: '.$now);
+                    DI()->notorm->product->where('product_id',$item['product_id'])->update(array('num'=>$now));
                     $this->insertTotalInventoryRecord($item,$member,$product);
-
+                    if ($item['promoter']){
+                        DI() -> logger -> info('开始推荐商品返利: ');
+                        $promoterId=$item['promoter'];
+                        $price=$item['total'];
+                        DI() -> logger -> info($item['product_id'].'商品总额: '.$price);
+//                        返现比例
+                        $brokerage=$product['brokerage'];
+                        DI() -> logger -> info('返利比例: '.$brokerage);
+                        $cashBack=$price*$brokerage/100;
+                        DI() -> logger -> info('返利金额: '.$cashBack);
+//                        $promoter=DI()->notorm->members->where('id',$promoterId)->fetchOne();
+//                        $balanceBefore=$promoter['balance'];
+//                        $balanceNow=$balanceBefore+$cashBack;
+//                        DI() -> logger -> info('推荐人原余额: '.$balanceBefore);
+//                        DI() -> logger -> info('推荐人现余额: '.$balanceNow);
+//                        DI()->notorm->members->where('id',$promoterId)->update(array('balance'=>$balanceNow));
+                        $this->insertAddCommissionHistory($item,$cashBack,$promoterId);
+                    }
                 }
 
-                if (rel==1){
+                if ($rel==1){
                     DI() -> logger -> info('修改订单状态成功: ');
 
                     return true;
                 }else{
                     return false;
                 }
-            }elseif (OrderStatus::ORDER_STATUS_1 == $order['pay']){
+            }elseif (Common_OrderStatus::ORDER_STATUS_1 == $order['pay']){
                 return true;
             }
 
@@ -164,6 +182,21 @@ class Api_Notify extends PhalApi_Api {
             'remark' => $member['name'].'购买出库',//备注
         );
         return DI()->notorm->inventory_record->insert($info);
+    }
+    /**
+     * 添加佣金记录表（增加）
+     */
+    public function insertAddCommissionHistory($order_roduct,$cash,$memberId){
+        $arr=array(
+            'order_product_id'=>$order_roduct['order_product_id'],
+            'type'=>0,//推广金类型
+            'total'=>$cash,//金额
+            'member_id'=>$memberId,
+            'order_id'=>$order_roduct['order_id'],
+            'remark'=>'推广商品获得返利',
+            'status'=>0//未结算
+        );
+        return DI()->notorm->commission_history->insert($arr);
     }
     /**
      * 新注册用户信息（带推荐人）记录到返现明细表
