@@ -54,13 +54,35 @@ class Domain_ProductOrder
 
             $model=new Model_ProductOrder();
 
-            $res=$model->findProductOrderById($data->product_order_id);
+            $res=$model->findProductOrderById($data->order_id);
 
             return $res;
 
         }catch (Exception $e){
 
-            DI()->logger->error('通过id查看订单信息失败','订单id:'.$data->product_order_id.'异常信息:'.$e);
+            DI()->logger->error('通过id查看订单信息失败','订单id:'.$data->order_id.'异常信息:'.$e);
+
+            return false;
+        }
+    }
+
+
+    public function GetOrderBySession($data){
+
+        try{
+
+            $model=new Model_ProductOrder();
+
+                $res=$model->GetOrderBySession($data->openid , $data->status);
+
+
+
+
+            return $res;
+
+        }catch (Exception $e){
+
+            DI()->logger->error('通过session查看订单信息失败','openid:'.$data->openid.'异常信息:'.$e);
 
             return false;
         }

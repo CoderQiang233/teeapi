@@ -27,10 +27,12 @@ class Api_login extends PhalApi_Api
             ),
             'userRegister' => array(
                 'nickName' => array('name' => 'nickName', 'require' => true, 'type' => 'string', 'source' => 'post'),
+                'name' => array('name' => 'name', 'require' => true, 'type' => 'string', 'source' => 'post'),
                 'phone' => array('name' => 'phone', 'require' => true, 'type' => 'string', 'source' => 'post'),
                 'headPortrait' => array('name' => 'headPortrait', 'require' => true, 'type' => 'string', 'source' => 'post'),
                 'session3rd' => array('name' => 'session3rd', 'require' => true, 'type' => 'string', 'source' => 'post'),
-            ),
+     //          'creat_time'=>array('name'=>'creat_time','require' => false,'type'=>'string', 'source' => 'post')
+                ),
 
             'insertInvoice' => array(
                 'nickName' => array('name'=>'nickName','type' =>'string','require' => true,'source' => 'post'),
@@ -74,6 +76,7 @@ class Api_login extends PhalApi_Api
             // 设置验证码缓存，有郊时间2分钟
             DI()->cache->set($this->phone, $str, 600);
         }
+
         return $response;
     }
 
@@ -85,6 +88,7 @@ class Api_login extends PhalApi_Api
     {
         $rs = array('code' => 0, 'msg' => '', 'info' => array());
         $cache = DI()->cache->get($this->phone);
+
         if ($cache == null || $cache != $this->vcode) {
             $rs['msg'] = '验证码错误';
             return $rs;
@@ -105,10 +109,12 @@ class Api_login extends PhalApi_Api
         $data = array();
 
         $data['nick_name'] = $this->nickName;
+        $data['name'] =$this->nickName;
 
         $data['phone'] = $this->phone;
 
         $data['head_portrait'] = $this->headPortrait;
+        $data['create_time']=date('Y-m-d H:i:s');
 
         $session = DI()->wechatMini->getSession($this->session3rd);
         $data['openid'] =$session['openid'];
@@ -116,6 +122,11 @@ class Api_login extends PhalApi_Api
         $domain = new Domain_Login();
 
         $res = $domain->userRegister($data);
+        if($res ==0){
+            $rs['msg']="用户存在";
+            $rs['code'] = 2;
+            return $rs;
+        }
 
         if ($res) {
 
