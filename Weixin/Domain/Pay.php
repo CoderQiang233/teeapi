@@ -32,8 +32,10 @@ class Domain_Pay
 
 
     }
-  
 
+public function rePay($data){
+    return $this->unifiedOrder($data);
+}
 
     /**
      * 支付接口
@@ -41,7 +43,8 @@ class Domain_Pay
      */
     private function unifiedOrder($_data){
 
-        $money=$_data['total'];
+//        $money=$_data['cash_pay'];
+        $money=0.01;
         $data = array();
         $data['order_no'] = $_data['pay_id'];
         $data['title'] = '';

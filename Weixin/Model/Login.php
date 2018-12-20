@@ -20,35 +20,27 @@ class Model_Login extends PhalApi_Model_NotORM
 
 
     public  function userRegister($data){
+        $phone=$data['phone'];
 
-        try{
+        $exist= DI()->notorm->members->where('phone',$phone)->fetchAll();
+        if($exist){
+            return 0;
+        }else{
+            try{
 
-            DI()->notorm->members->insert($data);
+                DI()->notorm->members->insert($data);
 
-            return true;
-        }catch (Exception $e){
+                return true;
+            }catch (Exception $e){
 
-            return false;
+                return false;
 
-        }
-    }
-
-
-
-    public function insertInvoice($data){
-
-
-
-        try{
-
-            DI()->notorm->members->insert($data);
-
-            return true;
-        }catch (Exception $e){
-
-            return false;
-
+            }
         }
 
+
+
+
     }
+
 }
