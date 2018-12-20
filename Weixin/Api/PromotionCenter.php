@@ -54,7 +54,7 @@ class Api_PromotionCenter extends PhalApi_Api {
 
         $this->openid=$session['openid'];
 
-        $rel=$domain->getInfo($this);
+        $rel=$domain->getOrder($this);
 
         if($rel){
             $rs['code']=1;
