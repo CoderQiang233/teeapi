@@ -9,11 +9,20 @@
 class Domain_GoodStatistics
 {
 
-    public function getlist($data){
+    public function getList($data){
 
-        $product = new Model_GoodStatistics();
+        try{
 
-        return $product ->getList($data);
+            $product = new Model_GoodStatistics();
+
+            return $product ->getList($data);
+
+        }catch (Exception $e){
+
+            DI()->logger->error('商品销售统计失败','异常信息:'.$e);
+
+            return false;
+        }
     }
 
 

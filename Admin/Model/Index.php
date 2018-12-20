@@ -15,15 +15,14 @@ class Model_Index extends PhalApi_Model_NotORM
 
         try{
             //订单总数
-            $orderNum=DI()->notorm->commodity_order->where(array('pay'=>'1','commodity_num > ? '=> 0))->count('id');
+            $orderNum=DI()->notorm->order->where(array('pay > ?'=>Common_OrderStatus::ORDER_STATUS_0,'status'=> 0))->count('order_id');
             //总价格
-            $totalPrice=DI()->notorm->commodity_order->where(array('pay'=>'1','commodity_num > ? '=> 0))->sum('commodity_num*commodity_price');
+            $totalPrice=DI()->notorm->order->where(array('pay > ?'=>Common_OrderStatus::ORDER_STATUS_0,'status'=> 0))->sum('total');
             //总客户数
-            $userNum=DI()->notorm->members->where('flag', 1)->count('id');
+            $userNum=DI()->notorm->members->count('id');
 
             return array(
                 'orderNum' => $orderNum,
-//                'totalPrice' => $totalPrice>10000?($totalPrice/1000).'K':$totalPrice,
                 'totalPrice' => $totalPrice==null?0:$totalPrice,
                 'userNum' => $userNum,
             );
@@ -46,9 +45,9 @@ class Model_Index extends PhalApi_Model_NotORM
             $json = array();
 
             //各省订单总数
-            $provinceData=DI()->notorm->commodity_order
-                ->select('province_code, province_name, count(*) as total,SUM(commodity_num*commodity_price) as amount')
-                ->where(array('pay'=>'1','commodity_num > ? '=> 0))->group('province_code')->fetchAll();
+            $provinceData=DI()->notorm->order
+                ->select('province_code, province_name, count(*) as total,SUM(total) as amount')
+                ->where(array('pay > ?'=>Common_OrderStatus::ORDER_STATUS_0,'status'=> 0))->group('province_code')->fetchAll();
 
             foreach ($provinceData as $result) {
                 $json[strtoupper($result['province_code'])] = array(
@@ -75,12 +74,14 @@ class Model_Index extends PhalApi_Model_NotORM
     public function getProductOrderNewest(){
         try{
 
-            $sqls = 'SELECT o.*,m.name,m.phone,o.id as `key` '
-                . 'FROM commodity_order AS o LEFT JOIN members AS m '
-                . 'ON o.members_id=m.id WHERE o.pay=1 and o.commodity_num>0 '
-                .' order by o.id desc  limit 6 ';
+            $sqls = 'SELECT o.*,m.nick_name,m.phone,o.order_id as `key` '
+                . 'FROM shop_order AS o LEFT JOIN shop_members AS m '
+                . 'ON o.member_id=m.id WHERE o.pay=:pay and o.status=0 '
+                .' order by o.order_id desc  limit 6 ';
 
-            $result= DI()->notorm->commodity_order->queryAll($sqls);
+            $params=array(':pay'=>Common_OrderStatus::ORDER_STATUS_1);
+
+            $result= DI()->notorm->order->queryAll($sqls,$params);
 
             return $result;
 
