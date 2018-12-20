@@ -12,73 +12,70 @@ class Model_GoodStatistics extends PhalApi_Model_NotORM
 
     public function getList($data)
     {
-        $arr=array();
+        $where='';
 
-        $name=$data->commodity_name;
+        $name='';//商品名称
 
-        $datestart=$data->datestart;
+        $datestart='';//开始时间
 
-        $dateend=$data->dateend;
+        $dateend='';//结束时间
 
+        if('undefined' !==$data->name  && '' !== $data->name && null !== $data->name ){
 
+            $name=$data->name;
 
+            $where=$where." AND op.name like '%".$name."%' ";
 
-          //获取所有商品信息
-          $commodity=DI()->notorm->commodity->fetchAll();
-          //循环商品获取每个商品对应的全部订单信息
-          for($i=0;$i<count($commodity);$i++){
-              $select = DI()->notorm->commodity_order;
+            $products=DI()->notorm->product->where('name like ?','%'.$name.'%')->fetchAll();
+        }else{
+            $products=DI()->notorm->product->fetchAll();
+        }
 
-              if ('undefined' !== $name && '' !== $name && null !== $name) {
+        if('undefined' !==$data->datestart  && '' !== $data->datestart && null !== $data->datestart ){
 
-                  $select = $select->where('commodity_name', $name);
-              }
+            $datestart=$data->datestart;
 
-              if ('undefined' !== $datestart && '' !== $datestart && null !== $datestart) {
-                  //select fullName,addedTime FROM t_user where addedTime between  '2017-1-1 00:00:00'  and '2018-1-1 00:00:00';
-                  $select = $select->where('updatedAt >= ?',$datestart);
+            $where=$where." AND o.updatedAt >='".$datestart."'";
+        }
 
-              }
+        if('undefined' !==$data->dateend  && '' !== $data->dateend && null !== $data->dateend ){
 
-              if ('undefined' !== $dateend && '' !== $dateend && null !== $dateend) {
-                  //select fullName,addedTime FROM t_user where addedTime between  '2017-1-1 00:00:00'  and '2018-1-1 00:00:00';
-                  $select = $select->where('updatedAt < ?',$dateend);
+            $dateend=$data->dateend;
 
-              }
+            $where=$where." AND o.updatedAt <='".$dateend."'";
+        }
 
+        $sql='SELECT op.`name`,op.product_id,o.updatedAt,o.update_date, sum(op.quantity) as product_num, sum(op.total) as orders_price '
+            .'FROM shop_order_product AS op '.
+            'LEFT JOIN shop_order AS o ON op.order_id = o.order_id '
+            .'where o.pay>:pay and o.`status`=0 and op.product_id=:product_id '
+            .$where;
+//            .'GROUP BY op.product_id ';
 
-              //获取该商品id下的全部订单信息
-              $commodity_order=$select->where(array('product_id'=>$commodity[$i]['id'],'pay'=>'1'))->fetchAll();
+        $res=array();
 
-              if($commodity_order){
-                  $list=array();
-                  //获取到商品名称
-                  $list['commodity_name']=$commodity[$i]['name'];
-                  //获取到订单数量
-                  $list['order_num']=count($commodity_order);
-                  //获取到该商品总数和金额总计
-                  $commodity_num=0;
-                  //金额总计
-                  $price=0;
-                  for ($x=0;$x<count($commodity_order);$x++){
-                      $commodity_num+=$commodity_order[$x]['commodity_num'];
-                      $price+=$commodity_order[$x]['commodity_num']*$commodity_order[$x]['commodity_price'];
-                  }
+        foreach ($products as $k => $v){
 
-                  $list['commodity_num']=$commodity_num;
-                  //金额总计
-                  $list['orders_price']=$price;
+            $params=array(':pay'=>Common_OrderStatus::ORDER_STATUS_0,':product_id'=>$v['product_id']);
 
-                  $arr[]=$list;
-              }
+            $info=DI()->notorm->order_product->queryAll($sql,$params);
 
+            if($info[0]['name']){
+                $res[]=$info[0];
+            }elseif($datestart.$dateend==''){
+                $pro=array(
+                    'name'=>$v['name'],
+                    'product_id'=>$v['product_id'],
+                    'updatedAt'=>null,
+                    'update_date'=>null,
+                    'product_num'=>0,
+                    'orders_price'=>0,
+                );
+                $res[]=$pro;
+            }
 
-          }
-
-
-
-
-        return $arr;
+        }
+        return $res;
 
     }
 

@@ -21,11 +21,11 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
 
         $pay_id=$data->pay_id;//订单编号
 
-        $name=$data->name;//会员姓名
+        $name=$data->nick_name;//会员昵称
 
         $updatedAt=$data->updatedAt;//订单创建时间
 
-        $ship_status=$data->ship_status;//发货状态
+        $pay=$data->pay;//订单状态
 
         if('undefined' !==$pay_id  && '' !== $pay_id && null !== $pay_id ){
 
@@ -34,12 +34,12 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
 
         if('undefined' !==$name  && '' !== $name && null !== $name ){
 
-            $where=$where." AND m.name='".$name."'";
+            $where=$where." AND m.nick_name='".$name."'";
         }
 
-        if('undefined' !==$ship_status  && '' !== $ship_status && null !== $ship_status ){
+        if('undefined' !==$pay  && '' !== $pay && null !== $pay ){
 
-            $where=$where." AND o.ship_status='".$ship_status."'";
+            $where=$where." AND o.pay='".$pay."'";
         }
 
         if('undefined' !==$updatedAt  && '' !== $updatedAt && null !== $updatedAt ){
@@ -67,29 +67,22 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
 
         $start_page=$pageSize*($pageIndex-1);
 
-        $params = array(':pageSize' => $pageSize,':start_page' => $start_page);
+        $params = array(':pageSize' => $pageSize,':start_page' => $start_page,':pay'=>Common_OrderStatus::ORDER_STATUS_0);
 
         $sql = 'SELECT o.*,m.nick_name '
             . 'FROM shop_order AS o LEFT JOIN shop_members AS m '
-            . 'ON o.member_id=m.id WHERE o.pay>0 and o.status=0  '
+            . 'ON o.member_id=m.id WHERE o.pay>:pay and o.status=0  '
             . $where
             .' order by o.order_id desc  limit :start_page,:pageSize ';
 
         $sqls = 'SELECT o.*,m.nick_name '
             . 'FROM shop_order AS o LEFT JOIN shop_members AS m '
-            . 'ON o.member_id=m.id WHERE o.pay>0 and o.status=0 '
+            . 'ON o.member_id=m.id WHERE o.pay>:pay and o.status=0 '
             . $where;
 
         $orderAll= DI()->notorm->order->queryAll($sql,$params);
 
-//        for($i=0;$i<count($orderAll);$i++){
-//            $order=$orderAll[$i];
-//            //总的发货数量
-//            $shipnum=DI()->notorm->product_express->where('order_id',$order['order_id'])->sum('ship_num');
-//            $orderAll[$i]['shipnum']=$shipnum==null?0:$shipnum;
-//        }
-
-        $total = count(DI()->notorm->order->queryAll($sqls));
+        $total = count(DI()->notorm->order->queryAll($sqls,$params));
 
         return array(
             'orderAll' => $orderAll,
@@ -98,61 +91,28 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
         );
 
     }
-    public function orderPay($data){
-
-        try{
-
-            $info=array(
-                'commodity_name' => $data->commodityName,
-                'commodity_price' => $data->commodityPrice,
-                'commodity_num' => $data->commodityNum,
-                'members_id' => $data->membersId,
-                'pay' => 0,
-                'create_time' => date("Y-m-d H:i:s"),
-                'openid' => $data->openId,
-                'order_id' => $data->id,
-                'shipping_address' => $data->shippingAddress,
-            );
-            DI()->notorm->commodity_order->insert($info);
-
-            return true;
-
-        }catch (Exception $e){
-
-            DI()->logger->log('payProductOrder','插入订单失败',$e);
-            return false;
-        }
-
-    }
-    public function getProductOrderById($id){
-
-        return DI()->notorm->commodity_order->where('members_id',$id)->fetchAll();
-
-    }
 
     public function getById($id){
 
         try{
 
-            $params = array(':id' => $id);
+            $order=DI()->notorm->order->where('order_id',$id)->fetchOne();
 
-            $sql = 'SELECT o.*,m.name,m.phone  '
-                . 'FROM commodity_order AS o LEFT JOIN members AS m '
-                . 'ON o.members_id=m.id WHERE o.id=:id ';
+            $sql='SELECT op.*, p.* FROM shop_order_product AS op '.
+                'LEFT JOIN shop_product AS p ON op.product_id = p.product_id '.
+                'where op.order_id=:order_id ';
 
-            $order= DI()->notorm->commodity_order->queryAll($sql,$params);
+            $params=array(':order_id'=>$id);
 
-            $express=DI()->notorm->commodity_express->where('order_id',$id)->order('id')->fetchAll();
+            $products=DI()->notorm->order_product->queryAll($sql,$params);
 
-            $shipnum=DI()->notorm->commodity_express->where('order_id',$id)->sum('ship_num');
+            $express=DI()->notorm->product_express->where('order_id',$id)->fetchAll();
 
-            $order[0]['shipnum']=$shipnum;
+            $order['products']=$products;
 
-            if(count($express)>0){
+            $order['express']=$express;
 
-                $order[0]['express']=$express;
-            }
-            return $order[0];
+            return $order;
 
         }catch (Exception $e){
 
@@ -177,11 +137,9 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
                     'express_number' => $data->express_number,
                     'express_name' => $data->express_name,
                     'ship_time' => $data->ship_time,
-//                    'ship_num' => $data->ship_num,
-//                    'status' => $data->status,
                 );
 
-                DI()->notorm->commodity_express->where('id', $data->express_id)->update($infoupdatae);
+                DI()->notorm->product_express->where('id', $data->express_id)->update($infoupdatae);
 
             }else{//不存在插入
 
@@ -191,47 +149,25 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
                     'express_number' => $data->express_number,
                     'express_name' => $data->express_name,
                     'ship_time' =>$data->ship_time,
-                    'ship_num' => $data->status=='0'? $data->ship_num:-($data->ship_num),
-                    'status' => $data->status,//发货状态(0:发货,1:退货)
+                    'status' => '0',//发货状态(0:发货,1:退货)
                     'create_time'=>date("Y-m-d H:i:s"),
                     'userName' => $data->userName,
                     'user_name'=>$data->user_name,
                 );
-                //Step 1: 开启事务
-                DI()->notorm->beginTransaction('db_daili');
                 //1)插入商品订单表
-                DI()->notorm->commodity_express->insert($info);
-                //修改发货状态
-                $ship_status = array('ship_status' => 1);
-                //2)修改发货状态
-                DI()->notorm->commodity_order->where('id', $data->order_id)->update($ship_status);
-                //通过订单Id查询该条订单
-                $order=DI()->notorm->commodity_order->where('id',$data->order_id)->fetchOne();
-                //根据会员id查会员信息
-                $member=DI()->notorm->members->where('id',$order['members_id'])->fetchOne();
-                //3)发货且是代理 1.扣代理库存 2.插入库存明细
-                if($data->status=='0'&&$member['level']>1){
+                DI()->notorm->product_express->insert($info);
+                //修改订单状态
+                $ship_status = array('pay' => 2);
+                //2)修改订单状态
+                DI()->notorm->order->where('order_id', $data->order_id)->update($ship_status);
 
-                    $this->agentShipOperation($order,$member,$data);
-                }else if($data->status=='1'&&$member['level']>1){//退货是代理  1.加代理库存 2.插入库存明细
-
-                    $this->agentReturnOperation($order,$member,$data);
-                }else if($data->status=='1'&&$member['level']==1){//退货不是代理	 1.加总部库存 2.插入库存明细
-
-                    $this->headReturnOperation($order,$member,$data);
-                }
-                //Step 3: 提交事务
-                DI()->notorm->commit('db_daili');
             }
 
             return true;
 
         }catch (Exception $e){
 
-            DI()->logger->log('shipments','增加快递信息失败',$e);
-
-            // 回滚
-            DI()->notorm->rollback('db_daili');
+            DI()->logger->log('shipments','添加快递信息失败',$e);
 
             return false;
 
