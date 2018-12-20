@@ -35,4 +35,6 @@ class Domain_Login
         return $model -> insertInvoice($data);
 
     }
+
+
 }

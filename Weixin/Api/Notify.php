@@ -93,7 +93,7 @@ class Api_Notify extends PhalApi_Api {
 
 
 
-    private function updateOrder($out_trade_no){
+    public function updateOrder($out_trade_no){
 
         try{
             DI() -> logger -> info('进入支付回调: '.$out_trade_no.'$out_trade_no');
@@ -139,6 +139,16 @@ class Api_Notify extends PhalApi_Api {
                     }
                 }
 
+                if ($order['balance_pay']){
+                    DI() -> logger -> info('开始余额支付扣除余额: ');
+                    $balance=$member['balance'];
+                    $balanceNow=$balance-$order['balance_pay'];
+                    DI()->notorm->members->where('id',$order['member_id'])->update(array('balance'=>$balanceNow));
+                    DI() -> logger -> info('余额扣除成功: ');
+                    $this->insertBuyCommissionHistory($order);
+
+                }
+
                 if ($rel==1){
                     DI() -> logger -> info('修改订单状态成功: ');
 
@@ -171,7 +181,7 @@ class Api_Notify extends PhalApi_Api {
 
         $info=array(
             'product_id' => $order_product['product_id'],//商品id
-            'member_id' => $member['members_id'],//会员id
+            'member_id' => $member['id'],//会员id
             'name' =>$member['nick_name'],//会员真实姓名
             'state' => '1',//出库，入库(1出库   2入库)
             'date_added' => date("Y-m-d H:i:s"),//创建时间
@@ -186,15 +196,29 @@ class Api_Notify extends PhalApi_Api {
     /**
      * 添加佣金记录表（增加）
      */
-    public function insertAddCommissionHistory($order_roduct,$cash,$memberId){
+    public function insertAddCommissionHistory($order_product,$cash,$memberId){
         $arr=array(
-            'order_product_id'=>$order_roduct['order_product_id'],
+            'order_product_id'=>$order_product['order_product_id'],
             'type'=>0,//推广金类型
             'total'=>$cash,//金额
             'member_id'=>$memberId,
-            'order_id'=>$order_roduct['order_id'],
+            'order_id'=>$order_product['order_id'],
             'remark'=>'推广商品获得返利',
             'status'=>0//未结算
+        );
+        return DI()->notorm->commission_history->insert($arr);
+    }
+    /**
+     * 添加佣金记录表（余额消费）
+     */
+    public function insertBuyCommissionHistory($order){
+        $arr=array(
+            'type'=>1,//消费类型
+            'total'=>$order['balance_pay'],//金额
+            'member_id'=>$order['member_id'],
+            'order_id'=>$order['order_id'],
+            'remark'=>'余额消费',
+            'status'=>1//未结算
         );
         return DI()->notorm->commission_history->insert($arr);
     }
