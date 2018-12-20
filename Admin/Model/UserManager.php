@@ -24,7 +24,7 @@ class Model_UserManager extends PhalApi_Model_NotORM
             $where = $where . ' AND role="' . $role . '"';
         }
         $sql = 'SELECT * '
-            . 'FROM user  '
+            . 'FROM shop_user  '
             . ' WHERE 1=1 ' . $where
             . 'ORDER BY id';
 
@@ -47,7 +47,7 @@ class Model_UserManager extends PhalApi_Model_NotORM
         );
         $rs = DI()->notorm->user->insert($arr);
         $sql = 'SELECT * '
-            . 'FROM user'
+            . 'FROM shop_user'
             . ' WHERE 1=1 '
             . 'ORDER BY id';
 
@@ -73,7 +73,7 @@ class Model_UserManager extends PhalApi_Model_NotORM
             return $rel;
         }
         $sql = 'SELECT * '
-            . 'FROM user'
+            . 'FROM shop_user'
             . ' WHERE 1=1 '
             . 'ORDER BY id';
 
@@ -96,7 +96,7 @@ class Model_UserManager extends PhalApi_Model_NotORM
             return $rel;
         }
         $sql = 'SELECT * '
-            . 'FROM user'
+            . 'FROM shop_user'
             . ' WHERE 1=1 '
             . 'ORDER BY id';
         $rows = $this->getORM()->queryAll($sql);

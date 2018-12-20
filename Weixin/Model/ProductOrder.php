@@ -84,8 +84,41 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
     }
 
 
-    public  function confirmReceipt($product_order_id){
+    public  function confirmReceipt($order_id){
 
-        return DI()->notorm->order->where('order_id',$product_order_id)->update(array('pay'=>'3'));
+        $result1=DI()->notorm->order->where('order_id',$order_id)->update(array('pay'=>Common_OrderStatus::ORDER_STATUS_3));
+        if($result1){
+            $shop_order_product=DI()->notorm->order_product->where(array('order_id'=>$order_id,'promoter is not null'))->fetchAll();
+        }
+        $money=0;
+        if($shop_order_product){
+            foreach ($shop_order_product as $s){
+
+                $rs=DI()->notorm->commission_history->where(array('order_product_id'=>$s['order_product_id'],'status'=>0))->fetchOne();
+                $id=$rs['member_id'];
+                $money+=$rs['total'];
+                $member=DI()->notorm->members->where('id',$id)->fetchOne();
+                $balance=$member['balance'];
+                $money+=$balance;
+                $result2=DI()->notorm->members->where('id',$id)->update(array('balance'=>$money));
+                $result3=DI()->notorm->commission_history->where(array('order_product_id'=>$s['order_product_id'],'status'=>0))->update(array('status'=>1));
+
+            }
+        }
+
+        return $result1;
+    }
+
+    public  function OrderByPayID($pay_id){
+
+        $order=DI()->notorm->order->where('pay_id',$pay_id)->fetchOne();
+
+        $product=DI()->notorm->order_product->where('order_id',$order['order_id'])->fetchAll();
+
+        $order['product']=$product;
+
+        return $order;
+
+
     }
 }

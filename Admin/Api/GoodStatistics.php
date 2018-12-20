@@ -15,7 +15,7 @@ class Api_GoodStatistics  extends PhalApi_Api{
     public function getRules() {
         return array(
             'getlist'=> array(
-                'commodity_name' => array('name' => 'commodity_name', 'type' => 'string',  'desc' => '商品名称'),
+                'name' => array('name' => 'name', 'type' => 'string',  'desc' => '商品名称'),
                 'datestart' => array('name' => 'datestart', 'type' => 'string',  'desc' => '开始时间'),
                 'dateend' => array('name' => 'dateend', 'type' => 'string',  'desc' => '结束时间'),
             ),
@@ -34,9 +34,9 @@ class Api_GoodStatistics  extends PhalApi_Api{
 
         $product = new Domain_GoodStatistics();
 
-        $result = $product->getlist($this);
+        $result = $product->getList($this);
 
-        if($result){
+        if(is_array($result)){
 
             $rs['code'] = 1;
 
