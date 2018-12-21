@@ -115,14 +115,15 @@ class Domain_ProductType
      */
     function getTree($data, $pId)
     {
-        $tree = '';
+        $tree = array();
         foreach($data as $k => $v)
         {
             $v['type_parent']=json_decode ($v['type_parent']);
             if($v['parent_id'] == $pId)
             {        //父亲找到儿子
                 $v['children'] = $this->getTree($data, $v['product_type_id']);
-                $tree[] = $v;
+//                $tree[] = $v;
+                array_push($tree,$v);
             }
         }
         return $tree;

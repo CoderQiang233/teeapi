@@ -61,7 +61,8 @@ class Model_GoodStatistics extends PhalApi_Model_NotORM
             $info=DI()->notorm->order_product->queryAll($sql,$params);
 
             if($info[0]['name']){
-                $res[]=$info[0];
+//                $res[]=$info[0];
+                array_push($res,$info[0]);
             }elseif($datestart.$dateend==''){
                 $pro=array(
                     'name'=>$v['name'],
@@ -71,7 +72,8 @@ class Model_GoodStatistics extends PhalApi_Model_NotORM
                     'product_num'=>0,
                     'orders_price'=>0,
                 );
-                $res[]=$pro;
+//                $res[]=$pro;
+                array_push($res,$pro);
             }
 
         }
