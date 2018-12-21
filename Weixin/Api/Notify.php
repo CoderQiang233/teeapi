@@ -139,7 +139,7 @@ class Api_Notify extends PhalApi_Api {
                     }
                 }
 
-                if ($order['balance_pay']){
+                if ($order['balance_pay']!=0){
                     DI() -> logger -> info('开始余额支付扣除余额: ');
                     $balance=$member['balance'];
                     $balanceNow=$balance-$order['balance_pay'];

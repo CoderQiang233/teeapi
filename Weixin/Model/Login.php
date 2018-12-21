@@ -22,7 +22,7 @@ class Model_Login extends PhalApi_Model_NotORM
     public  function userRegister($data){
         $phone=$data['phone'];
 
-        $exist= DI()->notorm->members->where('phone',$phone)->fetchAll();
+        $exist= DI()->notorm->members->where('phone',$phone)->fetchOne();
         if($exist){
             return 0;
         }else{

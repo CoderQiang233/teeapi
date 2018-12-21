@@ -42,7 +42,8 @@ class Domain_IndexPage{
             $moduleItem['name']=$item['name'];
             $moduleItem['id']=$item['module_id'];
             $setting=json_decode($item['setting']);
-            if (property_exists($setting,'product')){
+//            if (property_exists($setting,'product')){
+                if (isset($setting->product)){
                 $proid=$setting->product;
                 if(is_array($proid)){
                     $pro=array();
