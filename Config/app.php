@@ -73,11 +73,11 @@ return array(
     'UCloud' => array(
         //对应的文件路径
 //        'host' => 'https://xcx.zgftlm.com/Public'
-        'host' => 'https://testzlgj.zgftlm.com/Public/upload'
+        'host' => 'https://teeshop.zgftlm.com/Public/upload'
     ),
 //    'imagePath' => 'https://xcx.zgftlm.com/Public/upload',
 //    'imagePath' => 'https://testzlgj.zgftlm.com/Public/upload',
-    'imagePath' => 'http://192.168.10.105/Public/upload',
+    'imagePath' => 'http://teeshop.zgftlm.com/Public/upload',
 
     'weixinBill' => array(
         'url'=>'https://api.mch.weixin.qq.com/pay/downloadbill',

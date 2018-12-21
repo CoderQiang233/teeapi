@@ -74,7 +74,7 @@ class Api_login extends PhalApi_Api
         $param = array(
             'code' => $str
         );
-        $response = $sms::sendSms($this->phone, 'SMS_145645944', $param);
+        $response = $sms::sendSms($this->phone, 'SMS_89515014', $param);
         if ($response->Code && $response->Code == 'OK') {
             // 设置验证码缓存，有郊时间2分钟
             DI()->cache->set($this->phone, $str, 600);

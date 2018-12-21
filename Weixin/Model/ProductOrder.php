@@ -112,7 +112,7 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
 
         $order=DI()->notorm->order->where('pay_id',$pay_id)->fetchOne();
 
-        $product=DI()->notorm->order_product->where('order_id',$order['order_id'])->fetchOne();
+        $product=DI()->notorm->order_product->where('order_id',$order['order_id'])->fetchAll();
 
         $order['product']=$product;
 

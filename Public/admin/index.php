@@ -4,7 +4,7 @@
  */
 
 require_once dirname(__FILE__) . '/../init.php';
-
+DI()->logger->info('进入index');
 //装载你的接口
 DI()->loader->addDirs('Admin');
 
