@@ -15,7 +15,6 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
             'FROM shop_product_order AS o '.
             'LEFT JOIN shop_product AS p ON o.product_id = p.product_id '.
             'WHERE status=0 and o.pay = :pay and o.member_id= :member_id order by o.product_order_id ';
-
         $params =array(':pay'=>$data->pay,':member_id'=>$data->member_id);
 
         $rs=DI()->notorm->product_order->queryAll($sql,$params);
@@ -113,9 +112,13 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
 
         $order=DI()->notorm->order->where('pay_id',$pay_id)->fetchOne();
 
-        $product=DI()->notorm->order_product->where('order_id',$order['order_id'])->fetchAll();
+        $product=DI()->notorm->order_product->where('order_id',$order['order_id'])->fetchOne();
 
         $order['product']=$product;
+
+        $express=DI()->notorm->product_express->where('order_id',$order['order_id'])->fetchOne();
+
+        $order['express']=$express;
 
         return $order;
 
