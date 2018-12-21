@@ -10,40 +10,23 @@
 class Domain_AgentCashback
 {
 
+    public function getList($data){
+        try{
 
-    public function getMemberList($data)
-    {
-        $model = new Model_AgentCashback();
+            $model=new Model_AgentCashback();
 
-        $rs = $model->getMemberList($data);
-        return $rs;
+            $res=$model->getList($data);
+
+            return $res;
+
+        }catch (Exception $e){
+
+            DI()->logger->error('查看推客列表信息失败','异常信息:'.$e);
+
+            return false;
+        }
     }
-    public function getMemberListMsg($data)
-    {
-        $model = new Model_AgentCashback();
 
-        $rs = $model->getMemberListMsg($data);
-        return $rs;
-    }
-    public function getAgentCashbackList($data)
-    {
-        $model = new Model_AgentCashback();
 
-        $rs = $model->getAgentCashbackList($data);
-        return $rs;
-    }
-    public function getAgentCashbackMonthList($data)
-    {
-        $model = new Model_AgentCashback();
 
-        $rs = $model->getAgentCashbackMonthList($data);
-        return $rs;
-    }
-    public function updateCashStatus($data)
-    {
-        $model = new Model_AgentCashback();
-
-        $rs = $model->updateCashStatus($data);
-        return $rs;
-    }
 }

@@ -98,7 +98,7 @@ class Model_ProductOrder extends PhalApi_Model_NotORM
 
             $order=DI()->notorm->order->where('order_id',$id)->fetchOne();
 
-            $sql='SELECT op.*, p.* FROM shop_order_product AS op '.
+            $sql='SELECT op.*, p.*  FROM shop_order_product AS op '.
                 'LEFT JOIN shop_product AS p ON op.product_id = p.product_id '.
                 'where op.order_id=:order_id ';
 

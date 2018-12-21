@@ -13,9 +13,9 @@ class Domain_ProductBanner{
         return $rel;
     }
 //新增banner
-    public function UploadBanner($path,$is_use){
+    public function UploadBanner($path){
         $model=new Model_ProductBanner();
-        $rel=$model->UploadBanner($path,$is_use);
+        $rel=$model->UploadBanner($path);
         return $rel;
     }
     //删除
@@ -26,9 +26,9 @@ class Domain_ProductBanner{
     }
 
     //修改
-    public function ModifyBanner($id,$path,$is_use){
+    public function ModifyBanner($id,$path){
         $model=new Model_ProductBanner();
-        $rel=$model->ModifyBanner($id,$path,$is_use);
+        $rel=$model->ModifyBanner($id,$path);
         return $rel;
     }
 }

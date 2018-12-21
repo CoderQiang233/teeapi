@@ -13,10 +13,9 @@ class Model_ProductBanner extends PhalApi_Model_NotORM{
     }
 
     //新增banner
-    public function UploadBanner($path,$is_use){
+    public function UploadBanner($path){
         $data=array(
             'path'=>$path,
-            'is_use'=>$is_use,
             'create_time'=>date('Y-m-d H:i:s'),
         );
 
@@ -31,13 +30,12 @@ class Model_ProductBanner extends PhalApi_Model_NotORM{
         return $data;
     }
     //修改banner
-    public function ModifyBanner($id,$path,$is_use){
+    public function ModifyBanner($id,$path){
         $banner=DI()->notorm->banner->where('id',$id)->fetchOne();
         $sc='C:/Users/Administrator/Desktop/dailiAP/Public/upload'.$banner['path'];
         @unlink($sc);
         $data=array(
             'path'=>$path,
-            'is_use'=>$is_use,
             'create_time'=>date('Y-m-d H:i:s'),
         );
         $data=DI()->notorm->banner->where('id',$id)->update($data);

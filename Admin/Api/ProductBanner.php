@@ -13,7 +13,6 @@ class Api_ProductBanner extends PhalApi_Api {
             ),
             'UploadBanner' => array(
                 'path' => array('name' => 'path', 'type' => 'string', 'require' => true, 'desc' => '图片路径'),
-                'is_use' => array('name' => 'is_use', 'type' => 'string', 'require' => true, 'desc' => '图片路径'),
                 ),
             'DeleteBanner' => array(
                 'id' => array('name' => 'id', 'type' => 'string', 'require' => true, 'desc' => '数据ID'),
@@ -22,7 +21,6 @@ class Api_ProductBanner extends PhalApi_Api {
             'ModifyBanner' => array(
                 'id' => array('name' => 'id', 'type' => 'string', 'require' => true, 'desc' => '数据ID'),
                 'path' => array('name' => 'path', 'type' => 'string', 'require' => true, 'desc' => '文件路径'),
-                'is_use' => array('name' => 'is_use', 'type' => 'string', 'require' => true, 'desc' => '图片路径'),
             ),
 
 
@@ -44,7 +42,7 @@ class Api_ProductBanner extends PhalApi_Api {
     public function UploadBanner() {
         $rs = array('code' => 0, 'msg' => '', 'info' => array());
         $domain=new Domain_ProductBanner();
-        $data=$domain->UploadBanner($this->path,$this->is_use);
+        $data=$domain->UploadBanner($this->path);
         if($data){
             $rs['code']=0;
             $rs['info']=$data;
@@ -78,7 +76,7 @@ class Api_ProductBanner extends PhalApi_Api {
     public function ModifyBanner() {
         $rs = array('code' => 0, 'msg' => '', 'info' => array());
         $domain=new Domain_ProductBanner();
-        $data=$domain->ModifyBanner($this->id,$this->path,$this->is_use);
+        $data=$domain->ModifyBanner($this->id,$this->path);
         if($data){
             $rs['code']=0;
             $rs['info']=$data;
