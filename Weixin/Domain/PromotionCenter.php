@@ -20,5 +20,15 @@ class Domain_PromotionCenter
 
     }
 
+    public function getOrder($data)
+    {
+
+        $model = new Model_PromotionCenter();
+
+        return $model->getOrder($data->openid);
+
+
+    }
+
 
 }

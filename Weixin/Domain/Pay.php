@@ -32,6 +32,17 @@ class Domain_Pay
 
 
     }
+    public function addOrderZero($data,$products){
+
+        $pay = new Model_Pay();
+
+
+        return $pay ->addOrder($data,$products);
+
+
+
+
+    }
 
 public function rePay($data){
     return $this->unifiedOrder($data);

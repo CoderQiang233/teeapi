@@ -31,7 +31,9 @@ class Api_login extends PhalApi_Api
                 'phone' => array('name' => 'phone', 'require' => true, 'type' => 'string', 'source' => 'post'),
                 'headPortrait' => array('name' => 'headPortrait', 'require' => true, 'type' => 'string', 'source' => 'post'),
                 'session3rd' => array('name' => 'session3rd', 'require' => true, 'type' => 'string', 'source' => 'post'),
-     //          'creat_time'=>array('name'=>'creat_time','require' => false,'type'=>'string', 'source' => 'post')
+                'is_promoter' => array('name' => 'is_promoter', 'require' => true, 'type' => 'string', 'source' => 'post'),
+
+                //          'creat_time'=>array('name'=>'creat_time','require' => false,'type'=>'string', 'source' => 'post')
                 ),
 
             'insertInvoice' => array(
@@ -39,7 +41,8 @@ class Api_login extends PhalApi_Api
                 'phone' => array('name'=>'phone','type' =>'string','require' => true,'source' => 'post'),
                 'headPortrait' => array('name'=>'headPortrait','type' =>'string','require' => true,'source' => 'post'),
                 'openid' =>array('name'=>'openid','type' =>'string','require' => true,'source' => 'post'),
-                    ),
+              ),
+
         );
     }
 
@@ -119,6 +122,8 @@ class Api_login extends PhalApi_Api
         $session = DI()->wechatMini->getSession($this->session3rd);
         $data['openid'] =$session['openid'];
         $data['balance'] =0.00;
+        $data['is_promoter'] =$this->is_promoter;
+
         $domain = new Domain_Login();
 
         $res = $domain->userRegister($data);
@@ -175,5 +180,8 @@ class Api_login extends PhalApi_Api
 
 
     }
+
+
+
 
 }
